@@ -153,7 +153,7 @@ def process_all_gacetas():
     # Connect to MongoDB
     collection = connect_to_mongodb()
     
-    if not collection:
+    if collection is None:
         print("\n" + "="*50)
         print("⚠️  MongoDB no está configurado o no disponible")
         print("="*50)
