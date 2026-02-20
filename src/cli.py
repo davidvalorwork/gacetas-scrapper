@@ -46,6 +46,7 @@ def main() -> int:
                 nombre=r.get("nombre", "Desconocido"),
                 numero_gaceta=r["numero_gaceta"],
                 filename=r["gaceta"],
+                fecha=r.get("fecha", "Desconocida"),
                 pagina=r.get("page_number")
             )
             saved_count += 1

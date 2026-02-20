@@ -48,19 +48,49 @@ def api_search():
             "as": "gaceta_info"
         }},
         {"$unwind": "$gaceta_info"},
+        {"$group": {
+            "_id": "$_id",
+            "cedula": {"$first": "$cedula"},
+            "nombre": {"$first": "$nombre"},
+            "apariciones": {
+                "$push": {
+                    "numero_gaceta": "$gaceta_info.numero_gaceta",
+                    "filename": "$gaceta_info.filename",
+                    "fecha": "$gaceta_info.fecha",
+                    "pagina": "$relationships.pagina"
+                }
+            }
+        }},
         {"$project": {
             "_id": 0,
             "cedula": 1,
             "nombre": 1,
-            "numero_gaceta": "$gaceta_info.numero_gaceta",
-            "filename": "$gaceta_info.filename",
-            "pagina": "$relationships.pagina"
+            "apariciones": 1
         }},
         {"$limit": 100}
     ]
     
     results = list(db.persona.aggregate(pipeline))
     return jsonify(results)
+
+@app.route('/api/mine', methods=['POST'])
+def api_mine():
+    import subprocess
+    import sys
+    # Runs the CLI script in the background as a module so 'src' imports work properly
+    subprocess.Popen([sys.executable, "-m", "src.cli"])
+    return jsonify({"status": "success", "message": "Extracción iniciada en segundo plano. Esto puede tardar varios minutos dependiendo de la cantidad de gacetas."})
+
+@app.route('/api/clear', methods=['POST'])
+def api_clear():
+    # Delete all documents in the related collections
+    try:
+        db.persona.delete_many({})
+        db.gaceta.delete_many({})
+        db.persona_gaceta.delete_many({})
+        return jsonify({"status": "success", "message": "Base de datos limpiada con éxito."})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/pdf/<filename>')
 def serve_pdf(filename):
