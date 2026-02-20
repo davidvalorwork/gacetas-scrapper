@@ -20,11 +20,14 @@ python --version
 ### 2. Tesseract OCR
 Tesseract es necesario para extraer texto de los PDFs.
 
-**Windows:**
-1. Descarga el instalador desde: https://github.com/UB-Mannheim/tesseract/wiki
-2. Instala Tesseract (recomendado: `C:\Program Files\Tesseract-OCR`)
-3. Durante la instalación, asegúrate de seleccionar el paquete de idioma **Español (spa)**
-4. Agrega Tesseract al PATH o configura la ruta en el archivo `.env`
+**Windows (y reinstalación en Windows 11):**
+1. Descarga el instalador desde: https://github.com/UB-Mannheim/tesseract/wiki (ej. `tesseract-ocr-w64-setup-5.x.x.exe`)
+2. Desinstala Tesseract anterior (Panel de control → Programas) si reinstalas.
+3. Instala en la ruta por defecto: `C:\Program Files\Tesseract-OCR`
+4. **Importante:** En el instalador, en "Choose Components", marca **"Additional language data (download)"** y en la lista selecciona **"Spanish"**. Sin esto no tendrás `spa.traineddata` y el OCR fallará.
+5. En `.env` define:
+   - `TESSDATA_PREFIX=C:\\Program Files\\Tesseract-OCR\\tessdata`
+   - (Opcional) `TESSERACT_PATH=C:\\Program Files\\Tesseract-OCR\\tesseract.exe` si no está en el PATH
 
 **Linux (Ubuntu/Debian):**
 ```bash
@@ -244,6 +247,14 @@ gacetas/
 ├── .env.example           # Plantilla de configuración
 ├── scraper.py             # Script de descarga de PDFs
 ├── ocr_processor.py       # Script de OCR y MongoDB
+├── src/                   # Búsqueda de gacetas (estructura hexagonal)
+│   ├── constants/         # config.py (Mongo), search.py (cédulas, términos militares)
+│   ├── ports/             # GacetaRepository (interfaz)
+│   ├── adapters/          # MongoGacetaRepository
+│   ├── utils/             # text_matchers (cédulas y military con contexto)
+│   ├── services/          # search_service (search_cedulas, search_military)
+│   ├── cli.py             # Entrada CLI
+│   └── __main__.py        # python -m src
 ├── requirements.txt       # Dependencias básicas
 ├── requirements_ocr.txt   # Dependencias OCR y MongoDB
 ├── README.md             # Este archivo
@@ -290,11 +301,57 @@ db.gacetas.findOne(
 db.gacetas.find().sort({ processed_at: -1 }).limit(10)
 ```
 
+## Búsqueda de cédulas y menciones militares
+
+El módulo bajo `src/` (estructura hexagonal) busca en todas las gacetas almacenadas en MongoDB:
+
+1. **Cédulas venezolanas**: patrón letra (**B**, V, E, J, G) + 6 a 9 dígitos (ej. `B12345678`). Para cada coincidencia se guarda el **contexto** (texto antes y después) para ver nombres y en qué gaceta/página aparece.
+2. **Menciones militares**: términos como *Ministro de Defensa*, *FANB*, *militar*, *General*, *Comandante*, etc., con contexto.
+
+**Requisito:** MongoDB configurado y gacetas ya procesadas con `ocr_processor.py`.
+
+```bash
+# Desde la raíz del proyecto
+
+# Buscar cédulas y menciones militares (imprime primeras 20 de cada tipo)
+python -m src
+
+# Solo cédulas
+python -m src --cedulas
+
+# Solo menciones militares
+python -m src --military
+
+# Guardar resultados en JSON
+python -m src --cedulas --out resultados_cedulas.json
+python -m src --military --out resultados_militares.json
+
+# Exportar CSV (columnas: Nombres, Apellidos, Cédula, Rango, Nombramiento, Número Gaceta, Fecha)
+python -m src --csv resultados.csv
+
+# Probar con pocas gacetas
+python -m src --limit 5 --out prueba.json
+```
+
+Al final de la ejecución se muestra un **resumen**: número total de cédulas, array con todas las cédulas encontradas, y para menciones militares solo las de **2 palabras** (rango/tipo) de forma resumida, sin contexto largo en consola.
+
+**CSV:** Con `--csv ARCHIVO` se genera un CSV con columnas estratégicas: **Nombres**, **Apellidos**, **Cédula**, **Rango**, **Nombramiento**, **Número Gaceta**, **Fecha**. Las filas son: una por cada cédula (con intento de extraer nombre/apellido del contexto) y una por cada mención militar de 2 palabras (rango/nombramiento). Número de gaceta y fecha se rellenan cuando están disponibles.
+
+**Estructura hexagonal en `src/`:**
+- `constants/` — configuración (MongoDB en `config.py`), patrones y términos de búsqueda (`search.py`). Fácil de modificar.
+- `ports/` — interfaz del repositorio de gacetas (`GacetaRepository`).
+- `adapters/` — implementación MongoDB del repositorio.
+- `utils/` — matchers de texto (cédulas y términos militares con contexto).
+- `services/` — casos de uso: búsqueda de cédulas y de menciones militares.
+- `cli.py` — entrada por línea de comandos; `python -m src` ejecuta este flujo.
+
 ## Solución de Problemas
 
-### Error: "Tesseract not found"
+### Error: "Tesseract not found" o "Error opening data file ... spa.traineddata"
 - Verifica que Tesseract esté instalado: `tesseract --version`
 - Si está instalado pero no en PATH, configura `TESSERACT_PATH` en `.env`
+- **spa.traineddata missing:** Reinstala Tesseract y en el instalador selecciona el idioma **Spanish**. En `.env` pon `TESSDATA_PREFIX=C:\\Program Files\\Tesseract-OCR\\tessdata`
+- Al ejecutar `python ocr_processor.py` el script comprueba si existe `spa.traineddata` y te indica la ruta correcta si falla
 
 ### Error: "Cannot connect to MongoDB"
 - Verifica que MongoDB esté corriendo: `mongosh` o `mongo`

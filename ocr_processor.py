@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 import pytesseract
 from pdf2image import convert_from_path
@@ -20,6 +20,52 @@ MONGO_COLLECTION_NAME = os.getenv("MONGO_COLLECTION_NAME", "gacetas")
 TESSERACT_PATH = os.getenv("TESSERACT_PATH")
 if TESSERACT_PATH:
     pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
+
+# Tesseract tessdata directory: must point to the folder that *contains* .traineddata files
+# (i.e. the "tessdata" folder itself, not its parent)
+def _get_tessdata_prefix():
+    prefix = os.getenv("TESSDATA_PREFIX")
+    if prefix:
+        p = Path(prefix).resolve()
+        return p.as_posix()
+    # Infer from Tesseract executable path -> .../Tesseract-OCR/tessdata
+    if TESSERACT_PATH:
+        tessdata = Path(TESSERACT_PATH).resolve().parent / "tessdata"
+        if tessdata.is_dir():
+            return tessdata.as_posix()
+    # Windows: try default install locations
+    if sys.platform == "win32":
+        for candidate in [
+            Path(r"C:\Program Files\Tesseract-OCR\tessdata"),
+            Path(r"C:\Program Files (x86)\Tesseract-OCR\tessdata"),
+        ]:
+            if candidate.is_dir():
+                return candidate.as_posix()
+    return None
+
+_tessdata_prefix = _get_tessdata_prefix()
+if _tessdata_prefix:
+    os.environ["TESSDATA_PREFIX"] = _tessdata_prefix
+
+
+def _check_tesseract_languages():
+    """Verify tessdata path and Spanish language file; print help if missing."""
+    prefix = os.environ.get("TESSDATA_PREFIX")
+    if not prefix:
+        return False
+    p = Path(prefix)
+    spa_file = p / "spa.traineddata"
+    if not p.is_dir():
+        print(f"  TESSDATA_PREFIX folder not found: {p}")
+        return False
+    if not spa_file.is_file():
+        print(f"  Spanish language file missing: {spa_file}")
+        print("  Reinstall Tesseract and select 'Spanish' in the installer, or download:")
+        print("  https://github.com/tesseract-ocr/tessdata/raw/main/spa.traineddata")
+        print("  and place it in:", p)
+        return False
+    return True
+
 
 def connect_to_mongodb():
     """Establish connection to MongoDB"""
@@ -133,7 +179,7 @@ def process_gaceta(pdf_path, collection):
         'total_pages': len(pages_text),
         'pages': pages_text,
         'full_text': full_text,
-        'processed_at': datetime.utcnow(),
+        'processed_at': datetime.now(timezone.utc),
         'file_path': str(pdf_path)
     }
     
@@ -315,6 +361,15 @@ if __name__ == "__main__":
         print("  Mac: brew install tesseract tesseract-lang")
         sys.exit(1)
     
+    # Check tessdata path and Spanish language file
+    print("  TESSDATA_PREFIX =", os.environ.get("TESSDATA_PREFIX", "(not set)"))
+    if not _check_tesseract_languages():
+        print("\n✗ Tesseract Spanish (spa) language data not found. Options:")
+        print("  1. Reinstall Tesseract: https://github.com/UB-Mannheim/tesseract/wiki")
+        print("     During setup, enable 'Additional language data' and select Spanish.")
+        print("  2. Or download spa.traineddata and put it in your tessdata folder.")
+        sys.exit(1)
+    print("✓ Spanish language data (spa.traineddata) found")
     print()
     process_all_gacetas()
 

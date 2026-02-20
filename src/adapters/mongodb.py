@@ -1,0 +1,69 @@
+"""
+Adapter: MongoDB implementation of GacetaRepository.
+Reads from the same collection used by ocr_processor.
+"""
+from typing import Iterator, Optional
+
+from src.constants.config import MONGO_URI, MONGO_DB_NAME, MONGO_COLLECTION_NAME
+from src.ports.repository import GacetaDocument, GacetaPage
+
+
+class MongoGacetaRepository:
+    """Reads all gacetas and all pages from MongoDB."""
+
+    def __init__(
+        self,
+        uri: Optional[str] = None,
+        db_name: Optional[str] = None,
+        collection_name: Optional[str] = None,
+    ) -> None:
+        self._uri = uri or MONGO_URI
+        self._db_name = db_name or MONGO_DB_NAME
+        self._collection_name = collection_name or MONGO_COLLECTION_NAME
+        self._client = None
+        self._collection = None
+
+    def _ensure_connected(self):
+        if self._collection is not None:
+            return
+        if not self._uri:
+            raise RuntimeError("MONGO_URI not set")
+        try:
+            from pymongo import MongoClient
+            self._client = MongoClient(self._uri, serverSelectionTimeoutMS=5000)
+            db = self._client[self._db_name]
+            self._collection = db[self._collection_name]
+            self._client.server_info()
+        except ImportError as e:
+            raise RuntimeError("pymongo not installed. pip install pymongo") from e
+        except Exception as e:
+            raise RuntimeError(f"Cannot connect to MongoDB: {e}") from e
+
+    def count(self) -> int:
+        self._ensure_connected()
+        return self._collection.count_documents({})
+
+    def iter_gacetas(self, limit: Optional[int] = None) -> Iterator[GacetaDocument]:
+        self._ensure_connected()
+        cursor = self._collection.find(
+            {},
+            {"filename": 1, "numero_gaceta": 1, "fecha": 1, "year": 1, "pages": 1, "full_text": 1},
+        )
+        if limit is not None:
+            cursor = cursor.limit(limit)
+        for doc in cursor:
+            pages = doc.get("pages") or []
+            yield GacetaDocument(
+                filename=doc.get("filename", ""),
+                numero_gaceta=doc.get("numero_gaceta", ""),
+                fecha=doc.get("fecha", ""),
+                year=doc.get("year"),
+                pages=[
+                    GacetaPage(
+                        page_number=p.get("page_number"),
+                        text=(p.get("text") or ""),
+                    )
+                    for p in pages
+                ],
+                full_text=doc.get("full_text") or "",
+            )
