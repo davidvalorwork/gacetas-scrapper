@@ -104,37 +104,3 @@ def extract_nombres_apellidos(context_before: str, context_after: str) -> Tuple[
     return ("", "")
 
 
-def extract_nombres_apellidos_from_extended_context(
-    context_before: str, context_after: str, max_lines: int = 5
-) -> Tuple[str, str]:
-    """
-    Same as extract_nombres_apellidos but considers several lines (not just the immediate one).
-    Use for military mentions where the person's name may appear 1–2 lines before the rank term.
-    """
-    def get_lines(text: str, take_last: bool, n: int) -> list[str]:
-        lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-        if not lines:
-            return []
-        if take_last:
-            return lines[-n:] if len(lines) >= n else lines
-        return lines[:n]
-
-    candidates = (
-        get_lines(context_before, take_last=True, n=max_lines)
-        + get_lines(context_after, take_last=False, n=max_lines)
-    )
-    for line in candidates:
-        if not line or not _candidate_line(line):
-            continue
-        words = line.split()
-        if len(words) <= 2:
-            nombres = words[0]
-            apellidos = words[1] if len(words) > 1 else ""
-        elif len(words) == 3:
-            nombres = words[0]
-            apellidos = " ".join(words[1:])
-        else:
-            nombres = " ".join(words[:2])
-            apellidos = " ".join(words[2:])
-        return (nombres.strip(), apellidos.strip())
-    return ("", "")

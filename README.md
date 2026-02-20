@@ -248,11 +248,11 @@ gacetas/
 ├── scraper.py             # Script de descarga de PDFs
 ├── ocr_processor.py       # Script de OCR y MongoDB
 ├── src/                   # Búsqueda de gacetas (estructura hexagonal)
-│   ├── constants/         # config.py (Mongo), search.py (cédulas, términos militares)
+│   ├── constants/         # config.py (Mongo), search.py (cédulas)
 │   ├── ports/             # GacetaRepository (interfaz)
 │   ├── adapters/          # MongoGacetaRepository
-│   ├── utils/             # text_matchers (cédulas y military con contexto)
-│   ├── services/          # search_service (search_cedulas, search_military)
+│   ├── utils/             # text_matchers (cédulas con contexto)
+│   ├── services/          # search_service (search_cedulas)
 │   ├── cli.py             # Entrada CLI
 │   └── __main__.py        # python -m src
 ├── requirements.txt       # Dependencias básicas
@@ -301,48 +301,40 @@ db.gacetas.findOne(
 db.gacetas.find().sort({ processed_at: -1 }).limit(10)
 ```
 
-## Búsqueda de cédulas y menciones militares
+## Búsqueda de cédulas
 
 El módulo bajo `src/` (estructura hexagonal) busca en todas las gacetas almacenadas en MongoDB:
 
-1. **Cédulas venezolanas**: patrón letra (**B**, V, E, J, G) + 6 a 9 dígitos (ej. `B12345678`). Para cada coincidencia se guarda el **contexto** (texto antes y después) para ver nombres y en qué gaceta/página aparece.
-2. **Menciones militares**: términos como *Ministro de Defensa*, *FANB*, *militar*, *General*, *Comandante*, etc., con contexto.
+**Cédulas venezolanas**: patrón letra (**B**, V, E, J, G) + 5 a 9 dígitos (ej. `B12345678`). Para cada coincidencia se guarda el **contexto** (texto antes y después) para ver nombres y en qué gaceta/página aparece.
 
 **Requisito:** MongoDB configurado y gacetas ya procesadas con `ocr_processor.py`.
 
 ```bash
 # Desde la raíz del proyecto
 
-# Buscar cédulas y menciones militares (imprime primeras 20 de cada tipo)
+# Buscar cédulas (imprime primeras 20)
 python -m src
-
-# Solo cédulas
-python -m src --cedulas
-
-# Solo menciones militares
-python -m src --military
 
 # Guardar resultados en JSON
 python -m src --cedulas --out resultados_cedulas.json
-python -m src --military --out resultados_militares.json
 
-# Exportar CSV (columnas: Nombres, Apellidos, Cédula, Rango, Nombramiento, Número Gaceta, Fecha)
+# Exportar CSV (columnas: Nombres, Apellidos, Cédula, Número Gaceta, Fecha, Página, Contexto)
 python -m src --csv resultados.csv
 
 # Probar con pocas gacetas
 python -m src --limit 5 --out prueba.json
 ```
 
-Al final de la ejecución se muestra un **resumen**: número total de cédulas, array con todas las cédulas encontradas, y para menciones militares solo las de **2 palabras** (rango/tipo) de forma resumida, sin contexto largo en consola.
+Al final de la ejecución se muestra un **resumen**: número total de cédulas y array con todas las cédulas encontradas.
 
-**CSV:** Con `--csv ARCHIVO` se genera un CSV con columnas estratégicas: **Nombres**, **Apellidos**, **Cédula**, **Rango**, **Nombramiento**, **Número Gaceta**, **Fecha**. Las filas son: una por cada cédula (con intento de extraer nombre/apellido del contexto) y una por cada mención militar de 2 palabras (rango/nombramiento). Número de gaceta y fecha se rellenan cuando están disponibles.
+**CSV:** Con `--csv ARCHIVO` se genera un CSV con columnas: **Nombres**, **Apellidos**, **Cédula**, **Número Gaceta**, **Fecha**, **Página**, **Contexto**. Una fila por cada cédula encontrada, con intento de extraer nombre/apellido del contexto.
 
 **Estructura hexagonal en `src/`:**
-- `constants/` — configuración (MongoDB en `config.py`), patrones y términos de búsqueda (`search.py`). Fácil de modificar.
+- `constants/` — configuración (MongoDB en `config.py`), patrones de búsqueda (`search.py`).
 - `ports/` — interfaz del repositorio de gacetas (`GacetaRepository`).
 - `adapters/` — implementación MongoDB del repositorio.
-- `utils/` — matchers de texto (cédulas y términos militares con contexto).
-- `services/` — casos de uso: búsqueda de cédulas y de menciones militares.
+- `utils/` — matchers de texto (cédulas con contexto).
+- `services/` — búsqueda de cédulas.
 - `cli.py` — entrada por línea de comandos; `python -m src` ejecuta este flujo.
 
 ## Solución de Problemas

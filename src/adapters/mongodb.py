@@ -67,3 +67,38 @@ class MongoGacetaRepository:
                 ],
                 full_text=doc.get("full_text") or "",
             )
+
+    def save_relationship(self, cedula: str, nombre: str, numero_gaceta: str, filename: str, pagina: Optional[int]):
+        """Saves the relationship in MongoDB collections: persona, gaceta, persona_gaceta."""
+        self._ensure_connected()
+        db = self._client[self._db_name]
+        
+        # 1. Save or get Persona
+        persona_coll = db["persona"]
+        persona_doc = persona_coll.find_one({"cedula": cedula})
+        if not persona_doc:
+            res = persona_coll.insert_one({"cedula": cedula, "nombre": nombre})
+            persona_id = res.inserted_id
+        else:
+            persona_id = persona_doc["_id"]
+            if persona_doc.get("nombre") == "Desconocido" and nombre != "Desconocido":
+                persona_coll.update_one({"_id": persona_id}, {"$set": {"nombre": nombre}})
+                
+        # 2. Save or get Gaceta metadata
+        gaceta_coll = db["gaceta"]
+        gaceta_doc = gaceta_coll.find_one({"numero_gaceta": numero_gaceta})
+        if not gaceta_doc:
+            res = gaceta_coll.insert_one({"numero_gaceta": numero_gaceta, "filename": filename})
+            gaceta_id = res.inserted_id
+        else:
+            gaceta_id = gaceta_doc["_id"]
+            if "filename" not in gaceta_doc:
+                gaceta_coll.update_one({"_id": gaceta_id}, {"$set": {"filename": filename}})
+            
+        # 3. Create Persona-Gaceta Relationship
+        rel_coll = db["persona_gaceta"]
+        rel_coll.insert_one({
+            "persona_id": persona_id,
+            "gaceta_id": gaceta_id,
+            "pagina": pagina
+        })
