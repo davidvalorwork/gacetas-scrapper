@@ -194,8 +194,8 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 20%;">Cédula</th>
-                            <th style="width: 30%;">Nombre Extraído</th>
+                            <th style="width: 20%; cursor: pointer;" onclick="sortTable('cedula')" id="th-cedula">Cédula ⇅</th>
+                            <th style="width: 30%; cursor: pointer;" onclick="sortTable('nombre')" id="th-nombre">Nombre Extraído ⇅</th>
                             <th style="width: 50%;">Apariciones Oficiales (Gacetas)</th>
                         </tr>
                     </thead>
@@ -218,6 +218,9 @@
         const emptyState = document.getElementById('emptyState');
 
         let timeout = null;
+        let currentData = [];
+        let sortCol = '';
+        let sortAsc = true;
 
         // On typing, trigger search with debounce
         searchInput.addEventListener('input', (e) => {
@@ -236,22 +239,51 @@
             
             try {
                 const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-                const data = await response.json();
+                currentData = await response.json();
                 
                 loader.style.display = 'none';
 
-                if (data.length === 0) {
+                if (currentData.length === 0) {
                     resultsPanel.style.display = 'none';
                     emptyState.style.display = 'block';
                 } else {
                     emptyState.style.display = 'none';
                     resultsPanel.style.display = 'block';
-                    renderTable(data);
+                    applySortingAndRender();
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
                 loader.style.display = 'none';
             }
+        }
+
+        function sortTable(column) {
+            if (sortCol === column) {
+                sortAsc = !sortAsc; // toggle direction if same column
+            } else {
+                sortCol = column;
+                sortAsc = true;
+            }
+            
+            // Update Headers UI
+            document.getElementById('th-cedula').innerHTML = "Cédula " + (sortCol === 'cedula' ? (sortAsc ? "▲" : "▼") : "⇅");
+            document.getElementById('th-nombre').innerHTML = "Nombre Extraído " + (sortCol === 'nombre' ? (sortAsc ? "▲" : "▼") : "⇅");
+
+            applySortingAndRender();
+        }
+
+        function applySortingAndRender() {
+            if (sortCol) {
+                currentData.sort((a, b) => {
+                    let valA = a[sortCol] ? a[sortCol].toString().toLowerCase() : '';
+                    let valB = b[sortCol] ? b[sortCol].toString().toLowerCase() : '';
+                    
+                    if (valA < valB) return sortAsc ? -1 : 1;
+                    if (valA > valB) return sortAsc ? 1 : -1;
+                    return 0;
+                });
+            }
+            renderTable(currentData);
         }
 
         function renderTable(data) {

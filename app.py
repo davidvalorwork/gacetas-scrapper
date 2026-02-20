@@ -48,6 +48,7 @@ def api_search():
             "as": "gaceta_info"
         }},
         {"$unwind": "$gaceta_info"},
+        {"$sort": {"gaceta_info.numero_gaceta": -1}}, # Sort appearances so the newest is pushed first
         {"$group": {
             "_id": "$_id",
             "cedula": {"$first": "$cedula"},
@@ -67,6 +68,8 @@ def api_search():
             "nombre": 1,
             "apariciones": 1
         }},
+        # Order by the highest (newest) gaceta in their first appearance
+        {"$sort": {"apariciones.0.numero_gaceta": -1}}, 
         {"$limit": 100}
     ]
     
