@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
+import concurrent.futures
 
 # Load environment variables
 load_dotenv()
@@ -113,32 +114,61 @@ def parse_filename(filename):
         print(f"  ✗ Error parsing filename {filename}: {e}")
         return None
 
+def extract_page_text(image):
+    """Función worker para procesar una sola imagen con OCR."""
+    text = pytesseract.image_to_string(image, lang='spa')
+    return text.strip()
+
 def extract_text_from_pdf(pdf_path):
     """
-    Extract text from PDF using Tesseract OCR
+    Extract text from PDF using Tesseract OCR en paralelo controlado
     """
+    # Límite de procesamiento concurrente. 2 a 4 es un buen balance para PC estándar
+    max_workers = int(os.getenv("OCR_MAX_WORKERS", "6"))
+    
     try:
         print(f"  Converting PDF to images...")
         # Convert PDF to images
-        images = convert_from_path(pdf_path, dpi=300)
+        images = convert_from_path(pdf_path, dpi=300, thread_count=max_workers)
         
-        extracted_text = []
         total_pages = len(images)
+        print(f"  Processing {total_pages} pages with OCR ({max_workers} páginas a la vez)...")
         
-        print(f"  Processing {total_pages} pages with OCR...")
-        for i, image in enumerate(images, 1):
-            print(f"    Page {i}/{total_pages}...", end='\r')
-            # Extract text from image using Tesseract
-            text = pytesseract.image_to_string(image, lang='spa')
-            extracted_text.append({
-                'page_number': i,
-                'text': text.strip()
-            })
+        # Limitar hilos internos de Tesseract.
+        # Es más rápido correr varios Tesseract en paralelo (cada uno con 1 hilo)
+        # que correr 1 Tesseract con varios hilos.
+        os.environ['OMP_THREAD_LIMIT'] = '1'
         
-        print(f"  ✓ Extracted text from {total_pages} pages")
+        completed = 0
+        extracted_text_dict = {}
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Enviamos cada página al pool de hilos
+            future_to_page = {executor.submit(extract_page_text, img): i for i, img in enumerate(images, 1)}
+            
+            for future in concurrent.futures.as_completed(future_to_page):
+                page_num = future_to_page[future]
+                try:
+                    text_result = future.result()
+                    extracted_text_dict[page_num] = text_result
+                    completed += 1
+                    print(f"    Progreso OCR: {completed}/{total_pages} páginas completadas...", end='\r')
+                except Exception as exc:
+                    print(f"\n    ✗ Error en la página {page_num}: {exc}")
+        
+        # Reconstruimos la lista preservando el orden correcto de las páginas
+        extracted_text = []
+        for i in range(1, total_pages + 1):
+            if i in extracted_text_dict:
+                extracted_text.append({
+                    'page_number': i,
+                    'text': extracted_text_dict[i]
+                })
+        
+        print(f"\n  ✓ Extracted text from {total_pages} pages")
         return extracted_text
     except Exception as e:
-        print(f"  ✗ Error extracting text: {e}")
+        print(f"\n  ✗ Error extracting text: {e}")
         return None
 
 def process_gaceta(pdf_path, collection):
