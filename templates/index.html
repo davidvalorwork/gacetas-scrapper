@@ -269,6 +269,109 @@
             padding-bottom: 0;
         }
 
+        .progress-container {
+            max-width: 650px;
+            margin: 1.5rem auto 0;
+            background: rgba(23, 24, 27, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            display: none;
+            text-align: left;
+        }
+
+        .progress {
+            height: 12px;
+            background-color: #0b0c0f;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        
+        .progress-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(23, 24, 27, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        
+        .pagination button {
+            background: rgba(234, 85, 54, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--accent);
+            color: #fff;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+
+        .multiple-badge {
+            display: inline-block;
+            background: rgba(43, 147, 72, 0.15);
+            border: 1px solid #2b9348;
+            color: #55c774;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .filter-select {
+            background: rgba(23, 24, 27, 0.5);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.2s ease;
+            appearance: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .filter-select:focus, .filter-select:hover {
+            border-color: var(--accent);
+            background: rgba(234, 85, 54, 0.05);
+        }
+        
+        .filter-select option {
+            background: var(--panel-bg);
+            color: var(--text-main);
+        }
+
     </style>
 </head>
 <body>
@@ -283,8 +386,44 @@
             <div class="search-container">
                 <input type="text" id="searchInput" class="search-input" placeholder="Ej. V-123456 o Maria Perez" autocomplete="off">
                 <div class="mt-4 gap-3 d-flex justify-content-center flex-wrap">
-                    <button class="btn-custom btn-primary-custom" onclick="triggerMine()">⬇️ Iniciar Extracción</button>
-                    <button class="btn-custom btn-danger-outline" onclick="triggerClear()">🗑️ Vaciar Base de Datos</button>
+                    <button id="btnMine" class="btn-custom btn-primary-custom">⬇️ Iniciar Extracción</button>
+                    <button id="btnClear" class="btn-custom btn-danger-outline">🗑️ Vaciar Base de Datos</button>
+                </div>
+
+                <!-- Filters UI -->
+                <div class="filters-container mt-3 d-flex justify-content-center flex-wrap gap-2">
+                    <select id="filterLetter" class="filter-select">
+                        <option value="">Cualquier Tipo (V, E, J...)</option>
+                        <option value="V">Venezolano (V)</option>
+                        <option value="E">Extranjero (E)</option>
+                        <option value="J">Jurídico (J)</option>
+                        <option value="G">Gubernamental (G)</option>
+                        <option value="P">Pasaporte (P)</option>
+                    </select>
+
+                    <select id="filterRange" class="filter-select">
+                        <option value="">Rango Completo</option>
+                        <option value="0-10">Menos de 10 Millones</option>
+                        <option value="10-20">10 A 20 Millones</option>
+                        <option value="20-30">20 A 30 Millones</option>
+                        <option value="30+">Más de 30 Millones</option>
+                    </select>
+
+                    <select id="filterSort" class="filter-select">
+                        <option value="newest">Más Recientes</option>
+                        <option value="apariciones">Mayor Cant. de Apariciones</option>
+                    </select>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div id="progressContainer" class="progress-container">
+                    <div class="progress">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressMessage" class="text-truncate" style="max-width: 85%;">Iniciando...</span>
+                        <span id="progressPct">0%</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -302,8 +441,8 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 20%; cursor: pointer;" onclick="sortTable('cedula')" id="th-cedula">Cédula ⇅</th>
-                            <th style="width: 30%; cursor: pointer;" onclick="sortTable('nombre')" id="th-nombre">Nombre Extraído ⇅</th>
+                            <th style="width: 20%; cursor: pointer;" id="th-cedula">Cédula ⇅</th>
+                            <th style="width: 30%; cursor: pointer;" id="th-nombre">Nombre Extraído ⇅</th>
                             <th style="width: 50%;">Apariciones Oficiales (Gacetas)</th>
                         </tr>
                     </thead>
@@ -311,6 +450,11 @@
                         <!-- Filled via JS -->
                     </tbody>
                 </table>
+                <div class="pagination" id="paginationControls">
+                    <button id="btnPrevPage">Anterior</button>
+                    <span id="pageInfo" style="color: var(--text-muted); font-size: 0.9rem;">Página 1 de 1 (0 resultados)</span>
+                    <button id="btnNextPage">Siguiente</button>
+                </div>
             </div>
             <div class="empty-state" id="emptyState">
                 No hay resultados para mostrar. Ingresa una búsqueda para comenzar.
@@ -330,24 +474,63 @@
         let sortCol = '';
         let sortAsc = true;
 
+        let currentPage = 1;
+        let totalPages = 1;
+
+        // Register event listeners to avoid inline handlers (CSP evaluation constraint)
+        document.getElementById('th-cedula').addEventListener('click', () => sortTable('cedula'));
+        document.getElementById('th-nombre').addEventListener('click', () => sortTable('nombre'));
+        document.getElementById('btnPrevPage').addEventListener('click', () => changePage(-1));
+        document.getElementById('btnNextPage').addEventListener('click', () => changePage(1));
+        document.getElementById('btnMine').addEventListener('click', triggerMine);
+        document.getElementById('btnClear').addEventListener('click', triggerClear);
+
+        // Filter event listeners
+        document.getElementById('filterLetter').addEventListener('change', () => { currentPage = 1; fetchResults(searchInput.value.trim()); });
+        document.getElementById('filterRange').addEventListener('change', () => { currentPage = 1; fetchResults(searchInput.value.trim()); });
+        document.getElementById('filterSort').addEventListener('change', () => { currentPage = 1; fetchResults(searchInput.value.trim()); });
+
         // On typing, trigger search with debounce
         searchInput.addEventListener('input', (e) => {
             clearTimeout(timeout);
             const query = e.target.value.trim();
             timeout = setTimeout(() => {
+                currentPage = 1; // Reset to page 1 on new search
                 fetchResults(query);
             }, 300); // 300ms debounce
         });
 
         // Initialize empty search on load to show recent entries
         fetchResults('');
+        
+        function changePage(delta) {
+            currentPage += delta;
+            fetchResults(searchInput.value.trim());
+        }
 
         async function fetchResults(query) {
             loader.style.display = 'block';
             
+            const letter = document.getElementById('filterLetter').value;
+            const range = document.getElementById('filterRange').value;
+            const sort = document.getElementById('filterSort').value;
+
             try {
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-                currentData = await response.json();
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&page=${currentPage}&limit=15&letter=${encodeURIComponent(letter)}&range=${encodeURIComponent(range)}&sort=${encodeURIComponent(sort)}`);
+                const result = await response.json();
+                
+                // If it returned the new paginated structure
+                if (result.data) {
+                    currentData = result.data;
+                    totalPages = result.total_pages;
+                    document.getElementById('pageInfo').innerText = `Página ${result.page} de ${result.total_pages || 1} (${result.total} resultados)`;
+                    document.getElementById('btnPrevPage').disabled = result.page <= 1;
+                    document.getElementById('btnNextPage').disabled = result.page >= result.total_pages;
+                } else {
+                    // Fallback for old un-paginated array
+                    currentData = result;
+                    document.getElementById('paginationControls').style.display = 'none';
+                }
                 
                 loader.style.display = 'none';
 
@@ -401,7 +584,15 @@
                 const tr = document.createElement('tr');
                 
                 let aparicionesHtml = '';
-                item.apariciones.forEach(ap => {
+                item.apariciones.forEach((ap, index) => {
+                    // Check if it's beyond a reasonable limit visually and add a toggle or show all
+                    if (index > 4) {
+                        if (index === 5) {
+                            aparicionesHtml += `<div class="appearance-item text-center"><span style="color:var(--text-muted); font-size: 0.8rem;">... y ${item.total_apariciones - 5} apariciones más ocultas.</span></div>`;
+                        }
+                        return;
+                    }
+
                     const pageNumber = ap.pagina || 1;
                     const pdfUrl = ap.filename ? `/pdf/${encodeURIComponent(ap.filename)}#page=${pageNumber}` : '#';
                     
@@ -418,8 +609,16 @@
                     `;
                 });
                 
+                let multiplesBadge = '';
+                if (item.total_apariciones > 1) {
+                    multiplesBadge = `<br><span class="multiple-badge">Aparece en ${item.total_apariciones} Gacetas</span>`;
+                }
+
                 tr.innerHTML = `
-                    <td style="vertical-align: top; padding-top: 1.5rem;"><span class="cedula-badge">${item.cedula}</span></td>
+                    <td style="vertical-align: top; padding-top: 1.5rem;">
+                        <span class="cedula-badge">${item.cedula}</span>
+                        ${multiplesBadge}
+                    </td>
                     <td class="fw-bold" style="color: #ffffff; vertical-align: top; padding-top: 1.5rem;">${item.nombre}</td>
                     <td style="vertical-align: top; padding-right: 1rem; padding-top: 1.2rem;">
                         ${aparicionesHtml}
@@ -436,7 +635,10 @@
             try {
                 const res = await fetch('/api/mine', { method: 'POST' });
                 const json = await res.json();
-                alert(json.message);
+                if (!progressInterval) {
+                   progressInterval = setInterval(checkProgress, 2000);
+                }
+                checkProgress();
             } catch(e) {
                 alert("Error al iniciar extracción");
             }
@@ -456,6 +658,53 @@
                 alert("Error al vaciar la base de datos");
             }
         }
+
+        let progressInterval = null;
+        let lastProgressPct = -1;
+
+        async function checkProgress() {
+            try {
+                const res = await fetch('/api/progress');
+                const data = await res.json();
+                
+                if (data.status === 'processing') {
+                    document.getElementById('progressContainer').style.display = 'block';
+                    document.getElementById('progressBar').style.width = data.percentage + '%';
+                    document.getElementById('progressPct').innerText = data.percentage + '%';
+                    document.getElementById('progressMessage').innerText = data.message;
+                    
+                    document.getElementById('btnMine').disabled = true;
+                    document.getElementById('btnMine').style.opacity = '0.5';
+                    document.getElementById('btnMine').innerText = "Procesando...";
+
+                    // Optionally trigger refresh if progress bumps noticeably (e.g. every 10%)
+                    if (data.percentage > lastProgressPct + 10) {
+                        lastProgressPct = data.percentage;
+                        fetchResults(searchInput.value); 
+                    }
+                    
+                } else {
+                    // done or idle
+                    document.getElementById('progressContainer').style.display = 'none';
+                    document.getElementById('btnMine').disabled = false;
+                    document.getElementById('btnMine').style.opacity = '1';
+                    document.getElementById('btnMine').innerText = "⬇️ Iniciar Extracción";
+                    if (progressInterval) {
+                        clearInterval(progressInterval);
+                        progressInterval = null;
+                        lastProgressPct = -1;
+                        fetchResults(searchInput.value); 
+                    }
+                }
+            } catch(e) {
+                console.error("Error checking progress", e);
+            }
+        }
+        
+        // Kick off check on load
+        checkProgress();
+        progressInterval = setInterval(checkProgress, 2000);
+
     </script>
 </body>
 </html>

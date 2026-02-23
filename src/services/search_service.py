@@ -12,13 +12,16 @@ from src.constants.search import SNIPPET_LEN_CEDULA
 def search_cedulas(
     repository: GacetaRepository,
     limit_gacetas: Optional[int] = None,
+    progress_callback: Optional[callable] = None,
 ) -> List[dict[str, Any]]:
     """
     Iterate all gacetas from the repository; for each gaceta, scan all pages.
     Return list of hits with gaceta metadata, page number, and context.
     """
     results: List[dict[str, Any]] = []
-    for doc in repository.iter_gacetas(limit=limit_gacetas):
+    for index, doc in enumerate(repository.iter_gacetas(limit=limit_gacetas)):
+        if progress_callback:
+            progress_callback(index, doc.filename)
         # Prefer per-page scan so we can report page_number
         for page in doc.pages:
             hits = find_cedulas_with_context(page.text)

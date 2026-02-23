@@ -4,6 +4,8 @@ Run with: python -m src   or   python src/cli.py (from project root).
 """
 import sys
 import argparse
+import json
+import os
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -30,9 +32,38 @@ def main() -> int:
     to_scan = min(args.limit, total_gacetas) if args.limit else total_gacetas
     print(f"Alcance: {to_scan} gacetas (de {total_gacetas} registradas).\n")
 
-    print("Buscando cédulas y nombres, y guardando en MongoDB...")
-    cedulas = search_cedulas(repository, limit_gacetas=args.limit)
+    progress_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "progress.json")
     
+    def update_progress(phase, current_val, max_val, filename=""):
+        try:
+            pct = 0
+            if max_val > 0:
+                if phase == "search":
+                    pct = int((current_val / max_val) * 75)
+                    msg = f"Escaneando gacetas ({pct}%): {filename}"
+                else:
+                    pct = 75 + int((current_val / max_val) * 25)
+                    msg = f"Guardando cédulas ({pct}%): {filename}"
+            else:
+                pct = 100
+                msg = "Completado"
+                
+            data = {"percentage": pct, "message": msg, "status": "processing"}
+            if pct == 100 and phase == "done":
+                data["status"] = "idle"
+            
+            with open(progress_file, "w", encoding="utf-8") as f:
+                json.dump(data, f)
+        except:
+             pass
+
+    print("Buscando cédulas y nombres, y guardando en MongoDB...")
+    def search_cb(index, filename):
+        update_progress("search", index, to_scan, filename)
+
+    cedulas = search_cedulas(repository, limit_gacetas=args.limit, progress_callback=search_cb)
+    
+    current_hits = len(cedulas)
     saved_count = 0
     for i, r in enumerate(cedulas):
         if i < 20:
@@ -50,6 +81,8 @@ def main() -> int:
                 pagina=r.get("page_number")
             )
             saved_count += 1
+            if current_hits > 0:
+                update_progress("save", saved_count, current_hits, r["cedula"])
         except Exception as e:
             print(f"⚠️ Error guardando en BD para cédula {r['cedula']}: {e}", file=sys.stderr)
 
@@ -61,6 +94,8 @@ def main() -> int:
     print(f"Relaciones guardadas en MongoDB: {saved_count}")
     print("Colecciones actualizadas: 'persona', 'gaceta', 'persona_gaceta'.")
     print("=" * 60)
+    
+    update_progress("done", 1, 1, "")
 
     return 0
 

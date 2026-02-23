@@ -22,33 +22,78 @@ def index():
 @app.route('/api/search')
 def api_search():
     query = request.args.get('q', '').strip()
-    match_stage = {}
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 15))
+    skip = (page - 1) * limit
+    letter = request.args.get('letter', '').strip().upper()
+    range_filter = request.args.get('range', '').strip()
+    sort_by = request.args.get('sort', 'newest')
+
+    and_conditions = []
+    
     if query:
-        # Case insensitive search on cedula or name
-        match_stage = {
+        and_conditions.append({
             "$or": [
                 {"cedula": {"$regex": query, "$options": "i"}},
                 {"nombre": {"$regex": query, "$options": "i"}}
             ]
-        }
+        })
         
-    pipeline = [
-        {"$match": match_stage},
+    if letter:
+        and_conditions.append({"cedula": {"$regex": f"^{letter}-", "$options": "i"}})
+        
+    if range_filter == "0-10":
+        and_conditions.append({"cedula": {"$regex": r"^[A-Za-z]-\d{1,7}$"}})
+    elif range_filter == "10-20":
+        and_conditions.append({"cedula": {"$regex": r"^[A-Za-z]-1\d{7}$"}})
+    elif range_filter == "20-30":
+        and_conditions.append({"cedula": {"$regex": r"^[A-Za-z]-2\d{7}$"}})
+    elif range_filter == "30+":
+        and_conditions.append({"cedula": {"$regex": r"^[A-Za-z]-([3-9]\d{7}|\d{9,})$"}})
+
+    pipeline = []
+    if and_conditions:
+        if len(and_conditions) == 1:
+            pipeline.append({"$match": and_conditions[0]})
+        else:
+            pipeline.append({"$match": {"$and": and_conditions}})
+
+    if sort_by == 'apariciones':
+        pipeline.extend([
+            {"$lookup": {
+                "from": "persona_gaceta",
+                "localField": "_id",
+                "foreignField": "persona_id",
+                "as": "_pg_tmp"
+            }},
+            {"$addFields": {
+                "temp_count": {"$size": "$_pg_tmp"}
+            }},
+            {"$sort": {"temp_count": -1, "_id": -1}}
+        ])
+
+    facet_data = []
+    if sort_by != 'apariciones':
+        facet_data.append({"$sort": {"_id": -1}})
+        
+    facet_data.extend([
+        {"$skip": skip},
+        {"$limit": limit},
         {"$lookup": {
             "from": "persona_gaceta",
             "localField": "_id",
             "foreignField": "persona_id",
             "as": "relationships"
         }},
-        {"$unwind": "$relationships"},
+        {"$unwind": {"path": "$relationships", "preserveNullAndEmptyArrays": True}},
         {"$lookup": {
             "from": "gaceta",
             "localField": "relationships.gaceta_id",
             "foreignField": "_id",
             "as": "gaceta_info"
         }},
-        {"$unwind": "$gaceta_info"},
-        {"$sort": {"gaceta_info.numero_gaceta": -1}}, # Sort appearances so the newest is pushed first
+        {"$unwind": {"path": "$gaceta_info", "preserveNullAndEmptyArrays": True}},
+        {"$sort": {"gaceta_info.numero_gaceta": -1}}, 
         {"$group": {
             "_id": "$_id",
             "cedula": {"$first": "$cedula"},
@@ -66,23 +111,73 @@ def api_search():
             "_id": 0,
             "cedula": 1,
             "nombre": 1,
-            "apariciones": 1
+            "apariciones": {
+                "$filter": {
+                    "input": "$apariciones",
+                    "as": "ap",
+                    "cond": {"$ne": ["$$ap.numero_gaceta", None]}
+                }
+            }
         }},
-        # Order by the highest (newest) gaceta in their first appearance
-        {"$sort": {"apariciones.0.numero_gaceta": -1}}, 
-        {"$limit": 100}
-    ]
+        {"$addFields": {
+            "total_apariciones": {"$size": "$apariciones"}
+        }},
+        {"$sort": {"total_apariciones": -1} if sort_by == 'apariciones' else {"cedula": -1}}
+    ])
     
-    results = list(db.persona.aggregate(pipeline))
-    return jsonify(results)
+    pipeline.append({
+        "$facet": {
+            "metadata": [{"$count": "total"}],
+            "data": facet_data
+        }
+    })
+    
+    result = list(db.persona.aggregate(pipeline))
+    if result and result[0]['metadata']:
+        total = result[0]['metadata'][0]['total']
+        data = result[0]['data']
+    else:
+        total = 0
+        data = []
+
+    return jsonify({
+        "data": data,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total + limit - 1) // limit if limit > 0 else 0
+    })
 
 @app.route('/api/mine', methods=['POST'])
 def api_mine():
     import subprocess
     import sys
+    import json
+    
+    # Reset progress file
+    progress_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "progress.json")
+    try:
+        with open(progress_file, "w", encoding="utf-8") as f:
+            json.dump({"percentage": 0, "message": "Iniciando extracción...", "status": "processing"}, f)
+    except:
+        pass
+
     # Runs the CLI script in the background as a module so 'src' imports work properly
     subprocess.Popen([sys.executable, "-m", "src.cli"])
     return jsonify({"status": "success", "message": "Extracción iniciada en segundo plano. Esto puede tardar varios minutos dependiendo de la cantidad de gacetas."})
+
+@app.route('/api/progress', methods=['GET'])
+def api_progress():
+    import json
+    progress_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "progress.json")
+    if os.path.exists(progress_file):
+        try:
+            with open(progress_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return jsonify(data)
+        except:
+            return jsonify({"percentage": 0, "message": "Leyendo estado...", "status": "processing"})
+    return jsonify({"percentage": 0, "message": "No hay tarea en progreso", "status": "idle"})
 
 @app.route('/api/clear', methods=['POST'])
 def api_clear():
