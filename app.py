@@ -15,6 +15,10 @@ MONGO_DB_NAME = os.environ.get("MONGO_DB_NAME", "gacetas_db")
 client = MongoClient(MONGO_URI)
 db = client[MONGO_DB_NAME]
 
+# Register API v1 endpoints
+from src.api.v1.routes import api_v1_bp
+app.register_blueprint(api_v1_bp)
+
 @app.route('/')
 def index():
     return render_template('index.html')
