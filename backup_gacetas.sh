@@ -24,32 +24,16 @@ MONGO_DB_NAME="gacetas_db"  # nombre real de la base de datos usada por el proye
 
 # ===== FIN CONFIGURACIÓN =====
 
+USE_DOCKER=false
 ensure_mongodump() {
   if ! command -v mongodump >/dev/null 2>&1; then
-    echo "mongodump no encontrado. Intentando instalar mongodb-database-tools..."
-
-    if command -v apt-get >/dev/null 2>&1; then
-      echo "Detectado apt-get (Debian/Ubuntu). Ejecutando instalación con sudo."
-      sudo apt-get update && sudo apt-get install -y mongodb-database-tools
-    elif command -v yum >/dev/null 2>&1; then
-      echo "Detectado yum (RHEL/CentOS/Fedora). Ejecutando instalación con sudo."
-      sudo yum install -y mongodb-database-tools
-    elif command -v brew >/dev/null 2>&1; then
-      echo "Detectado Homebrew (macOS). Instalando mongodb-database-tools."
-      brew tap mongodb/brew
-      brew install mongodb-database-tools
-    elif command -v choco >/dev/null 2>&1; then
-      echo "Detectado Chocolatey (Windows). Instalando mongodb-database-tools."
-      choco install -y mongodb-database-tools
+    echo "mongodump local no encontrado. Comprobando si el contenedor refactor-grafo-mongodb-dev está en ejecución..."
+    if docker ps --format '{{.Names}}' | grep -q 'refactor-grafo-mongodb-dev'; then
+      echo "Contenedor detectado. Se usará mongodump desde Docker."
+      USE_DOCKER=true
     else
-      echo "No se pudo detectar un gestor de paquetes compatible."
-      echo "Instala manualmente las MongoDB Database Tools (mongodump)."
-      echo "Ver: https://www.mongodb.com/try/download/database-tools"
-      exit 1
-    fi
-
-    if ! command -v mongodump >/dev/null 2>&1; then
-      echo "mongodump sigue sin estar disponible tras el intento de instalación."
+      echo "No se encontró mongodump ni el contenedor 'refactor-grafo-mongodb-dev'."
+      echo "Asegúrate de tener Docker corriendo con la base de datos o instala mongodump."
       exit 1
     fi
   fi
@@ -68,6 +52,7 @@ ensure_mongodump
 
 echo "Creando backup MongoDB de la BD '${MONGO_DB_NAME}' en: $OUT_DIR"
 
+# Creamos el directorio local
 mkdir -p "$OUT_DIR"
 
 AUTH_ARGS=()
@@ -75,19 +60,30 @@ if [[ -n "$MONGO_USER" && -n "$MONGO_PASS" ]]; then
   AUTH_ARGS+=(--username="$MONGO_USER" --password="$MONGO_PASS" --authenticationDatabase="$MONGO_AUTH_DB")
 fi
 
-mongodump \
-  --host="$MONGO_HOST" \
-  --port="$MONGO_PORT" \
-  --db="$MONGO_DB_NAME" \
-  --out="$OUT_DIR" \
-  "${AUTH_ARGS[@]}"
+if [ "$USE_DOCKER" = "true" ]; then
+  # La ruta dentro del contenedor /backups está mapeada a ../gacetas/backups
+  # Por lo tanto, el OUT_DIR docker es /backups/${PROJECT_NAME}_mongo_${TS}
+  DOCKER_OUT_DIR="/backups/${PROJECT_NAME}_mongo_${TS}"
+  docker exec refactor-grafo-mongodb-dev mongodump \
+    --uri="mongodb://localhost:27017" \
+    --db="$MONGO_DB_NAME" \
+    --out="$DOCKER_OUT_DIR" \
+    "${AUTH_ARGS[@]}"
+else
+  mongodump \
+    --host="$MONGO_HOST" \
+    --port="$MONGO_PORT" \
+    --db="$MONGO_DB_NAME" \
+    --out="$OUT_DIR" \
+    "${AUTH_ARGS[@]}"
+fi
 
 if [[ ! -d "$OUT_DIR" || -z "$(ls -A "$OUT_DIR" 2>/dev/null)" ]]; then
-  echo "ERROR: El directorio de backup '$OUT_DIR' está vacío o no se creó."
+  echo "ERROR: El directorio de backup local '$OUT_DIR' está vacío o no se creó."
   echo "Revisa que la base de datos '$MONGO_DB_NAME' exista y que 'mongodump' no haya mostrado errores."
   exit 1
 fi
 
 echo "Backup MongoDB completado."
-echo "Directorio generado: $OUT_DIR"
+echo "Directorio generado (relativo local): $OUT_DIR"
 
