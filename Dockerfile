@@ -20,8 +20,10 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn
 # Copy the rest of the application's source code
 COPY . .
 
-# Expose port 5000 for the app
-EXPOSE 5000
+ENV MONGO_URI=mongodb://136.112.135.115/27017
+
+# Expose port 80 for the app
+EXPOSE 80
 
 # Command to run the application using gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "--timeout", "120", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "3", "--timeout", "120", "app:app"]

@@ -49,6 +49,7 @@ gacetas/
 *.log
 
 # MongoDB
+*.tar.gz
 *.bson
 
 # OCR temporary files
