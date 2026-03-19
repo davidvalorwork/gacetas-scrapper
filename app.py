@@ -202,4 +202,4 @@ def serve_pdf(filename):
 
 if __name__ == '__main__':
     # Start the Flask development server
-    app.run(debug=True, port=80)
+    app.run(debug=True, port=5000)
