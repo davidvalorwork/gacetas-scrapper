@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.."
 echo "========================================="
 echo "🛠️ 1. Construyendo la imagen de Docker..."
 echo "========================================="
-docker build -t $IMAGE_TAG .
+docker build --platform linux/amd64 -t $IMAGE_TAG .
 
 if [ $? -ne 0 ]; then
     echo "❌ Error al construir la imagen de Docker."

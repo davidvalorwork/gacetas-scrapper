@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn
 # Copy the rest of the application's source code
 COPY . .
 
-ENV MONGO_URI=mongodb://136.112.135.115/27017
+ENV MONGO_URI=mongodb://34.46.169.192/27017
 
 # Expose port 80 for the app
 EXPOSE 80
