@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Benchmark Ollama gemma3:12b - Gacetas 2026</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 1100px; margin: 20px auto; padding: 20px; color: #222; background: #fff; }
+  h1 { border-bottom: 3px solid #003366; padding-bottom: 6px; color: #003366; }
+  h2 { color: #003366; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 30px; }
+  .meta { background: #f8f9fa; border-left: 4px solid #003366; padding: 10px 16px; margin: 16px 0; }
+  .cards { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+  .card { flex: 1 1 200px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; }
+  .card .num { font-size: 1.8em; font-weight: 700; color: #003366; }
+  .card .lbl { font-size: 0.85em; color: #555; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.85em; margin: 10px 0; }
+  th, td { border: 1px solid #ccc; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #e2e8f0; color: #003366; }
+  tr:nth-child(even) { background: #f8fafc; }
+  .tag { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 0.78em; font-weight: 600; }
+  .tag-ok { background: #d1fae5; color: #065f46; }
+  .tag-warn { background: #fef3c7; color: #92400e; }
+  .tag-bad { background: #fee2e2; color: #991b1b; }
+  .small { font-size: 0.8em; color: #666; }
+  code { background: #f1f5f9; padding: 1px 5px; border-radius: 3px; font-size: 0.85em; }
+  @media print {
+    body { max-width: 100%; margin: 0; padding: 10mm; font-size: 10pt; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: auto; font-size: 9pt; }
+    tr { page-break-inside: avoid; }
+    .cards { display: block; }
+    .card { display: inline-block; width: 23%; margin: 2px; padding: 8px; }
+    .no-print { display: none; }
+  }
+  @page { size: A4; margin: 12mm; }
+</style>
+</head>
+<body>
+
+<h1>Benchmark Ollama <code>gemma3:12b-it-q4_K_M</code> &mdash; Gacetas 2026</h1>
+
+<div class="meta">
+  <b>Fecha:</b> 2026-05-20 &nbsp;|&nbsp;
+  <b>Hardware:</b> RTX 3060 12GB + i7-12700KF &nbsp;|&nbsp;
+  <b>Backend:</b> Ollama local &nbsp;|&nbsp;
+  <b>Gacetas:</b> 59 (year=2026) &nbsp;|&nbsp;
+  <b>Paginas:</b> 556
+</div>
+
+<h2>Resumen ejecutivo</h2>
+<div class="cards">
+  <div class="card"><div class="num">194 min</div><div class="lbl">Tiempo total (3h 14m)</div></div>
+  <div class="card"><div class="num">691</div><div class="lbl">Personas devueltas por el modelo</div></div>
+  <div class="card"><div class="num">554</div><div class="lbl">Personas validadas (kept)</div></div>
+  <div class="card"><div class="num">132</div><div class="lbl">Personas nuevas creadas</div></div>
+  <div class="card"><div class="num">333</div><div class="lbl">Pre-existentes actualizadas</div></div>
+  <div class="card"><div class="num">100</div><div class="lbl">Conflictos / baja confianza</div></div>
+</div>
+
+<h2>Filtrado anti-alucinacion</h2>
+<table>
+<tr><th>Categoria</th><th>Conteo</th></tr>
+<tr><td>Personas devueltas por el modelo</td><td>691</td></tr>
+<tr><td>Validadas (pasaron filtros)</td><td><span class="tag tag-ok">554</span></td></tr>
+<tr><td>Dropped &mdash; sin cedula valida</td><td><span class="tag tag-warn">71</span></td></tr>
+<tr><td>Dropped &mdash; cedula/cita no aparece en bloque</td><td><span class="tag tag-bad">54</span></td></tr>
+<tr><td>Dropped &mdash; placeholder (V-12345678 etc)</td><td><span class="tag tag-bad">5</span></td></tr>
+<tr><td>Dropped &mdash; sin RIF valido (juridica)</td><td><span class="tag tag-warn">7</span></td></tr>
+<tr><td>Marcadas baja confianza (<code>por_verificar</code>)</td><td><span class="tag tag-warn">11</span></td></tr>
+</table>
+
+<h2>Cedulas pre-existentes que el modelo revalido</h2>
+<p class="small">580 personas mencionadas en gacetas 2026. <b>448 ya existian en BD</b> antes del run y gemma3 las confirmo de nuevo + les puso contexto. <b>132 son completamente nuevas</b> aportadas por gemma3.</p>
+<table>
+<tr><th>Cedula</th><th>Nombre (existente)</th><th>Contexto puesto por gemma3</th></tr>
+<tr><td>V-19593640</td><td>JUAN CARLOS VILLEGAS BRITO</td><td>Ministro del Poder Popular para el Proceso Social de Trabajo</td></tr>
+<tr><td>V-6823952</td><td>JORGE RODRIGUEZ GOMEZ</td><td>Director del CICPC</td></tr>
+<tr><td>V-15541220</td><td>PEDRO INFANTE APARICIO</td><td>Primer Vicepresidente de la Asamblea Nacional</td></tr>
+<tr><td>V-24744711</td><td>GRECIA COLMENARES SANTANDER</td><td>Segunda Vicepresidenta de la Asamblea Nacional</td></tr>
+<tr><td>V-17038012</td><td>MARIA ALEJANDRA HERNANDEZ</td><td>Secretaria de la Asamblea Nacional</td></tr>
+<tr><td>V-16092902</td><td>JOSE OMAR MOLINA</td><td>Subsecretario de la Asamblea Nacional</td></tr>
+<tr><td>V-11395720</td><td>CARMEN GREGORIA PEREZ FERNANDEZ</td><td>FISCAL AUXILIAR INTERINO FISCALIA DECIMA TERCERA</td></tr>
+<tr><td>V-24656296</td><td>CAROLING ALEXANDRA AZOCAR ALEJOS</td><td>Trasladada Fiscal Auxiliar Interino Fiscalia 26</td></tr>
+<tr><td>V-14908093</td><td>JESUS DANIEL VERDU QUINTANA</td><td>Designado Fiscal Auxiliar Interino en Miranda</td></tr>
+<tr><td>V-26684810</td><td>MARIELY AGUILERA SALAZAR</td><td>Designada Fiscal Auxiliar Interino Fiscalia 44</td></tr>
+<tr><td>V-19063367</td><td>ESTEPHANY GABRIELA MORALES DE CASTILLO</td><td>Designada Fiscal Provisorio en Yaracuy</td></tr>
+<tr><td>V-18789559</td><td>VERONICA JOSE RAMONA RAMOS SALAZAR</td><td>Designada Fiscal Provisorio en Sucre</td></tr>
+<tr><td>V-19849102</td><td>JOHANNA CAROLINA COLMENARES MENDOZA</td><td>FISCAL AUXILIAR INTERINO FISCALIA VIGESIMA SEXTA</td></tr>
+<tr><td>V-18103227</td><td>MARIANA CAROLINA MUJICA PARRA</td><td>FISCAL AUXILIAR INTERINO FISCALIA VIGESIMA SEXTA</td></tr>
+<tr><td>V-16421838</td><td>VICTOR OMAR GARCIA ROJAS</td><td>FISCAL AUXILIAR SUPERIOR DE INVESTIGACION</td></tr>
+<tr><td>V-16791794</td><td>CARLOS JAVIER BLANCO VIVAS</td><td>Presidente de la Fundacion Mision Habitat</td></tr>
+<tr><td>V-12517252</td><td>ELKER DARIO BONILLA CAMACHO</td><td>Gerente (E) Oficina de Gestion Administrativa</td></tr>
+<tr><td>V-21345794</td><td>JHON ANDERSON HERNANDEZ COLMENAREZ</td><td>traslado como Fiscal Auxiliar Interino</td></tr>
+<tr><td>V-26458612</td><td>GENESIS SARAHI PERALTA SANCHEZ</td><td>traslado como Fiscal Auxiliar Interino</td></tr>
+<tr><td>V-11397300</td><td>LORENA RAMONA VALDERRAMA BASTIDAS</td><td>traslado como Fiscal Provisorio</td></tr>
+</table>
+<p class="small">(20 muestras; total pre-existentes revalidadas: 448)</p>
+
+<h2>Cedulas NUEVAS aportadas por gemma3</h2>
+<p class="small">El extractor regex previo no las habia detectado. gemma3 las encontro en las gacetas del 2026.</p>
+<table>
+<tr><th>Cedula</th><th>Nombre</th><th>Contexto</th></tr>
+<tr><td>V-1313864</td><td>EDISSON ISMAEL ALVAREZ OROPEZA</td><td>FISCAL AUXILIAR INTERINO a la FISCALIA OCTAVA</td></tr>
+<tr><td>V-14515635</td><td>ORCLY JOSE GARCIA LUGO</td><td>Representante de los trabajadores y las trabajadoras</td></tr>
+<tr><td>V-12932760</td><td>OMAR JESUS GARCIA PUCHE</td><td>Representante de los trabajadores y las trabajadoras</td></tr>
+<tr><td>V-13903869</td><td>Gleidys Taimar Carreno Gomez Cortez</td><td>Economico Financiera</td></tr>
+<tr><td>V-00363054</td><td>POMPEYO SUAREZ QUIROZ</td><td>Auxiliar de la Administracion Aduanera</td></tr>
+<tr><td>V-02071267</td><td>Luis Eduardo Tolosa Duarte</td><td>Gerente Aduana Principal Las Piedras Paraguana</td></tr>
+<tr><td>V-13322083</td><td>MAYIRA YURIMAR MONTOYA</td><td>reconocimiento a sus destacados aportes</td></tr>
+<tr><td>V-20997143</td><td>MIRANDA MISYERLIN NAZARETH SOJO HERNANDEZ</td><td>reconocimiento a sus destacados aportes</td></tr>
+<tr><td>V-11506348</td><td>ANGELA MARIA PEREIRA DE MEJIA</td><td>reconocimiento a sus destacados aportes</td></tr>
+<tr><td>V-8948354</td><td>MARIA JOSEFINA DA CORTE LUNA</td><td>GESTION CURRICULAR</td></tr>
+<tr><td>V-9873047</td><td>ARMANDO JOSE HERNANDEZ NUNEZ</td><td>GESTION CURRICULAR</td></tr>
+<tr><td>V-6308446</td><td>DILCIA JANETTE RICO ALVARADO</td><td>GESTION CURRICULAR</td></tr>
+</table>
+<p class="small">(12 muestras; total nuevas: 132)</p>
+
+<h2>Organismos / Gobierno detectados</h2>
+<table>
+<tr><th>Identificador</th><th>Nombre</th><th>Contexto</th></tr>
+<tr><td>ORG:MIN_EDUCACION_UNIVERSITARIA</td><td>Ministerio del Poder Popular para la Educacion Universitaria</td><td>Refrendado</td></tr>
+<tr><td>ORG:MIN_PROCESO_SOCIAL_DE_TRABAJO</td><td>Ministerio del Poder Popular para el Proceso Social de Trabajo</td><td>organo rector en materia de trabajo y seguridad social</td></tr>
+<tr><td>ORG:MIN_CIENCIA_Y_TECNOLOGIA</td><td>Ministerio del Poder Popular para la Ciencia y Tecnologia</td><td>RESOLUCION</td></tr>
+<tr><td>ORG:MIN_TRANSPORTE</td><td>Ministerio del Poder Popular para el Transporte</td><td>como Ministro del Poder Popular para el Transporte</td></tr>
+<tr><td>ORG:MIN_COMUNICACION_INFORMACION</td><td>Ministerio del Poder Popular para la Comunicacion e Informacion</td><td>RESOLUCION</td></tr>
+</table>
+<p class="small">Total organismos creados: 56 &nbsp;|&nbsp; Personas juridicas (RIF): 1</p>
+
+<h2>Conflictos detectados</h2>
+<p class="small">83 personas marcadas con <code>por_verificar: true</code>. 85 conflictos de tipo "mismo_cedula_otro_nombre" (la mayoria son ruido OCR &mdash; saltos de linea, caracteres rotos, titulos pegados al nombre). 11 marcadas por baja confianza del modelo. 0 conflictos de tipo "mismo_nombre_otra_cedula" en este run.</p>
+<table>
+<tr><th>Cedula</th><th>Nombre actual</th><th>Tipo</th><th>Detalle</th><th>Apariciones</th></tr>
+<tr><td>V-15147094</td><td>Alexis Antonio Andrade</td><td>mismo_cedula_otro_nombre</td><td><b>Alexis Antonio Andrade</b> &harr; Alexis Anrorlo Andrade</td><td>G43291 p3; G43291 p4; G41858 p1</td></tr>
+<tr><td>V-20914807</td><td>AUGUSTO
+ALEJANDRO MELÉNDEZ</td><td>mismo_cedula_otro_nombre</td><td><b>AUGUSTO
+ALEJANDRO MELÉNDEZ</b> &harr; AUGUSTO ALEJANDRO MELÉNDEZ IULI</td><td>G43295 p3; G43295 p6</td></tr>
+<tr><td>V-13919493</td><td>MORAIMA DEL VALLE MEDINA SILVA</td><td>baja_confianza_modelo</td><td>gaceta 43296 pag 2</td><td>G43296 p2</td></tr>
+<tr><td>V-23695886</td><td>Abogado
+RONALD ALEXANDER RATIA APONTE</td><td>mismo_cedula_otro_nombre</td><td><b>Abogado
+RONALD ALEXANDER RATIA APONTE</b> &harr; RONALD ALEXANDER RATIA APONTE</td><td>G43294 p6; G43253 p20; G43026 p4</td></tr>
+<tr><td>V-15819609</td><td>DE LA  
+  ESPECIALIZADA TIPO</td><td>mismo_cedula_otro_nombre</td><td><b>DE LA  
+  ESPECIALIZADA TIPO</b> &harr; DIRECTORA (E)</td><td>G43293 p3</td></tr>
+<tr><td>V-10399884</td><td>MARVAL DE MONTILLA</td><td>baja_confianza_modelo</td><td>gaceta 43296 pag 2</td><td>G43296 p2</td></tr>
+<tr><td>V-6119596</td><td>CABALLERO GODOY</td><td>mismo_cedula_otro_nombre</td><td><b>CABALLERO GODOY</b> &harr; ROCIO COROMOTO CABALLERO GODOY</td><td>G43302 p13</td></tr>
+<tr><td>V-6119596</td><td>CABALLERO GODOY</td><td>mismo_cedula_otro_nombre</td><td><b>CABALLERO GODOY</b> &harr; JUAN CARLOS LOYO HERNÁNDEZ</td><td>G43302 p13</td></tr>
+<tr><td>V-15360611</td><td>Abogada LEANA KARINA CABESA GONZÁLEZ</td><td>mismo_cedula_otro_nombre</td><td><b>Abogada LEANA KARINA CABESA GONZÁLEZ</b> &harr; LEANA KARINA CABESA GONZÁLEZ</td><td>G43292 p11</td></tr>
+<tr><td>V-20781675</td><td>AILE CARLOTA</td><td>mismo_cedula_otro_nombre</td><td><b>AILE CARLOTA</b> &harr; FALCÓN NEXAMS, AILE CARLOTA</td><td>G43312 p3</td></tr>
+<tr><td>V-17983928</td><td>La Contralora LISBETH SANTIAGO</td><td>mismo_cedula_otro_nombre</td><td><b>La Contralora LISBETH SANTIAGO</b> &harr; LISBETH SANTIAGO</td><td>G43299 p12; G43299 p15; G42377 p11; G42377 p12; G42060 p6</td></tr>
+<tr><td>V-10828855</td><td>Abogado MIGUEL JOSÉ SOLÍS
+PEÑA</td><td>mismo_cedula_otro_nombre</td><td><b>Abogado MIGUEL JOSÉ SOLÍS
+PEÑA</b> &harr; MIGUEL JOSÉ SOLÍS PEÑA</td><td>G43294 p5</td></tr>
+<tr><td>V-18121801</td><td>JAVIER ALEJANDRO ALTUVE
+HERNÁNDEZ</td><td>mismo_cedula_otro_nombre</td><td><b>JAVIER ALEJANDRO ALTUVE
+HERNÁNDEZ</b> &harr; JAVIER ALEJANDRO HERNÁNDEZ ALTUVE</td><td>G43298 p5; G43298 p6; G43227 p2; G43262 p8; G43273 p23</td></tr>
+<tr><td>V-6081646</td><td>JUAN BAUTISTA GUARACO MARTÍNEZ</td><td>mismo_cedula_otro_nombre</td><td><b>JUAN BAUTISTA GUARACO MARTÍNEZ</b> &harr; Juan Bautista Guaraco</td><td>G43314 p18; G43270 p2</td></tr>
+<tr><td>V-17199352</td><td>CORPOSALUD
+ARAGUA</td><td>mismo_cedula_otro_nombre</td><td><b>CORPOSALUD
+ARAGUA</b> &harr; DIRECTOR (E)</td><td>G43293 p2; G43293 p3</td></tr>
+<tr><td>V-11924076</td><td>Yasibit Yaremy Reaño</td><td>mismo_cedula_otro_nombre</td><td><b>Yasibit Yaremy Reaño</b> &harr; Yasibit Yaremy Reaño Álvarez</td><td>G43291 p3; G43291 p4; G41858 p1; G41858 p2</td></tr>
+<tr><td>V-19563707</td><td>Mieml Ss Suplentes</td><td>mismo_cedula_otro_nombre</td><td><b>Mieml Ss Suplentes</b> &harr; Richard David Rojas Quintero</td><td>G43293 p3; G43293 p5</td></tr>
+<tr><td>V-18779442</td><td>Abogado MANUEL PÁEZ
+CONTRERAS</td><td>mismo_cedula_otro_nombre</td><td><b>Abogado MANUEL PÁEZ
+CONTRERAS</b> &harr; MANUEL PÁEZ CONTRERAS</td><td>G43293 p5; G43293 p6</td></tr>
+<tr><td>V-27529880</td><td>Abogada WILLEIDY
+MARIAFERNANDA PADILLA FERNÁNDEZ</td><td>mismo_cedula_otro_nombre</td><td><b>Abogada WILLEIDY
+MARIAFERNANDA PADILLA FERNÁNDEZ</b> &harr; WILLEIDY MARIAFERNANDA PADILLA FERNÁNDEZ</td><td>G43293 p5; G43293 p6; G43192 p6</td></tr>
+<tr><td>V-12723916</td><td>Abogada CECILIA SÁEZ
+RANGEL</td><td>mismo_cedula_otro_nombre</td><td><b>Abogada CECILIA SÁEZ
+RANGEL</b> &harr; CECILIA SÁEZ RANGEL</td><td>G43292 p10</td></tr>
+<tr><td>V-11431952</td><td>DE DIVISIÓN EFRAÍN JOSÉ SÁNCHEZ
+ROMÁN</td><td>mismo_cedula_otro_nombre</td><td><b>DE DIVISIÓN EFRAÍN JOSÉ SÁNCHEZ
+ROMÁN</b> &harr; EFRAÍN JOSÉ SÁNCHEZ ROMÁN</td><td>G43297 p5; G43297 p6; G43151 p2</td></tr>
+<tr><td>V-5546102</td><td>Magalys Adelcia</td><td>mismo_cedula_otro_nombre</td><td><b>Magalys Adelcia</b> &harr; Magalys Adelcia Villalba Martínez</td><td>G43314 p18; G43314 p19; G43314 p22; G43107 p7</td></tr>
+<tr><td>V-5546102</td><td>Magalys Adelcia</td><td>mismo_cedula_otro_nombre</td><td><b>Magalys Adelcia</b> &harr; Magatlys Adelcia Villalba Martínez</td><td>G43314 p18; G43314 p19; G43314 p22; G43107 p7</td></tr>
+<tr><td>V-19932884</td><td>Abogado SEBASTIAN MIGUEL
+MENTADO</td><td>mismo_cedula_otro_nombre</td><td><b>Abogado SEBASTIAN MIGUEL
+MENTADO</b> &harr; SEBASTIAN MIGUEL MENTADO</td><td>G43294 p6; G43083 p11; G43175 p14</td></tr>
+<tr><td>V-13049461</td><td>GADA NEPTALÍ DE
+JESÚS ACOSTA PRIETO</td><td>mismo_cedula_otro_nombre</td><td><b>GADA NEPTALÍ DE
+JESÚS ACOSTA PRIETO</b> &harr; NEPTALÍ DE JESÚS ACOSTA PRIETO</td><td>G43297 p5; G43297 p6; G43297 p15; G43297 p16; G43151 p2</td></tr>
+<tr><td>V-15314033</td><td>Abogado ELY JESÚS OMAÑA
+LÓPEZ</td><td>mismo_cedula_otro_nombre</td><td><b>Abogado ELY JESÚS OMAÑA
+LÓPEZ</b> &harr; ELY JESÚS OMAÑA LÓPEZ</td><td>G43293 p5; G43293 p6</td></tr>
+<tr><td>V-16618076</td><td>COLMENAREZ GUEDEZ</td><td>mismo_cedula_otro_nombre</td><td><b>COLMENAREZ GUEDEZ</b> &harr; YESENIA MARLYN DI GOUVEIA RAMÍREZ</td><td>G43313 p4; G43314 p8; G43314 p16; G42076 p12; G42108 p12</td></tr>
+<tr><td>V-25099222</td><td>Abogada ROSMILI CAROLY RONDÓN RONDÓN</td><td>mismo_cedula_otro_nombre</td><td><b>Abogada ROSMILI CAROLY RONDÓN RONDÓN</b> &harr; ROSMILI CAROLY RONDÓN RONDÓN</td><td>G43303 p2</td></tr>
+<tr><td>V-12119196</td><td>Villalba Martínez
+Joel Enrique Orozco</td><td>mismo_cedula_otro_nombre</td><td><b>Villalba Martínez
+Joel Enrique Orozco</b> &harr; Joel Enrique Orozco Piñango</td><td>G43314 p18; G43314 p19; G43314 p22; G43197 p12; G43266 p6</td></tr>
+<tr><td>V-12119196</td><td>Villalba Martínez
+Joel Enrique Orozco</td><td>mismo_cedula_otro_nombre</td><td><b>Villalba Martínez
+Joel Enrique Orozco</b> &harr; Joel Enrique</td><td>G43314 p18; G43314 p19; G43314 p22; G43197 p12; G43266 p6</td></tr>
+<tr><td>V-13943870</td><td>LARRY DANIEL DEVOE MÁRQUEZ</td><td>mismo_cedula_otro_nombre</td><td><b>LARRY DANIEL DEVOE MÁRQUEZ</b> &harr; FERNANDO DANIEL HERNÁNDEZ LAMAS</td><td>G43294 p2; G43294 p4; G43038 p1; G43038 p2; G43096 p14</td></tr>
+<tr><td>V-13943870</td><td>LARRY DANIEL DEVOE MÁRQUEZ</td><td>mismo_cedula_otro_nombre</td><td><b>LARRY DANIEL DEVOE MÁRQUEZ</b> &harr; CARLOS LUIS MAJANO ARREDONDO</td><td>G43294 p2; G43294 p4; G43038 p1; G43038 p2; G43096 p14</td></tr>
+<tr><td>V-15122535</td><td>NADIA GIOVANNA MIGNOGNA TORO</td><td>mismo_cedula_otro_nombre</td><td><b>NADIA GIOVANNA MIGNOGNA TORO</b> &harr; Coromoto Godoy Calderón</td><td>G6984 p1; G6984 p2; G43046 p13</td></tr>
+<tr><td>V-8889195</td><td>SUSANA MARGARITA</td><td>baja_confianza_modelo</td><td>gaceta 43296 pag 2</td><td>G43296 p2</td></tr>
+<tr><td>V-26647685</td><td>CAROLINA ACEVEDO PARACARE</td><td>mismo_cedula_otro_nombre</td><td><b>CAROLINA ACEVEDO PARACARE</b> &harr; SHARM CAROLINA ACEVEDO PARACARE</td><td>G43295 p2; G43295 p5</td></tr>
+<tr><td>V-17908191</td><td>Abogada CARLA JULIBETH PEREIRA CAMACHO</td><td>mismo_cedula_otro_nombre</td><td><b>Abogada CARLA JULIBETH PEREIRA CAMACHO</b> &harr; CARLA JULIBETH PEREIRA CAMACHO</td><td>G43293 p6; G43293 p7; G43209 p4</td></tr>
+<tr><td>V-27399958</td><td>CHOURIO YANES</td><td>mismo_cedula_otro_nombre</td><td><b>CHOURIO YANES</b> &harr; MARCOS MANUEL CHOURIO YANES</td><td>G43296 p11; G43191 p20</td></tr>
+<tr><td>V-03820956</td><td>OFICINA TÉCNICA ADUANAL CARLOS</td><td>mismo_cedula_otro_nombre</td><td><b>OFICINA TÉCNICA ADUANAL CARLOS</b> &harr; CARLOS HERNANDEZ</td><td>G43294 p8; G43295 p1; G43295 p3</td></tr>
+<tr><td>V-11443109</td><td>El   RAMÓN CELESTINO VELÁSQUEZ ARAGUAYÁN</td><td>mismo_cedula_otro_nombre</td><td><b>El   RAMÓN CELESTINO VELÁSQUEZ ARAGUAYÁN</b> &harr; RAMÓN CELESTINO VELÁSQUEZ ARAGUAYÁN</td><td>G43307 p3; G43307 p4</td></tr>
+<tr><td>V-10353667</td><td>Cludadana DELCY ELOÍNA RODRÍGUEZ GÓMEZ</td><td>mismo_cedula_otro_nombre</td><td><b>Cludadana DELCY ELOÍNA RODRÍGUEZ GÓMEZ</b> &harr; DELCY ELOÍNA RODRÍGUEZ GÓMEZ</td><td>G43300 p3; G43301 p3; G43301 p4; G43304 p6; G43304 p7</td></tr>
+<tr><td>V-15500133</td><td>MARÍA ELENA</td><td>baja_confianza_modelo</td><td>gaceta 43296 pag 2</td><td>G43296 p2</td></tr>
+<tr><td>V-13087062</td><td>BEATRIZ CAROLINA</td><td>baja_confianza_modelo</td><td>gaceta 43296 pag 2</td><td>G43296 p2</td></tr>
+<tr><td>V-19593640</td><td>JUAN CARLOS VILLEGAS BRITO</td><td>mismo_cedula_otro_nombre</td><td><b>JUAN CARLOS VILLEGAS BRITO</b> &harr; Juan Carlos Villagas Brito</td><td>G43287 p1; G43287 p4; G43287 p5; G43290 p6; G43292 p2</td></tr>
+<tr><td>V-19593640</td><td>JUAN CARLOS VILLEGAS BRITO</td><td>mismo_cedula_otro_nombre</td><td><b>JUAN CARLOS VILLEGAS BRITO</b> &harr; YIMMY JAVIER COLMENARES SILVA</td><td>G43287 p1; G43287 p4; G43287 p5; G43290 p6; G43292 p2</td></tr>
+<tr><td>V-19593640</td><td>JUAN CARLOS VILLEGAS BRITO</td><td>mismo_cedula_otro_nombre</td><td><b>JUAN CARLOS VILLEGAS BRITO</b> &harr; DELCY ELOÍNA RODRÍGUEZ GÓMEZ</td><td>G43287 p1; G43287 p4; G43287 p5; G43290 p6; G43292 p2</td></tr>
+<tr><td>V-19593640</td><td>JUAN CARLOS VILLEGAS BRITO</td><td>mismo_cedula_otro_nombre</td><td><b>JUAN CARLOS VILLEGAS BRITO</b> &harr; JAVIER ALEJANDRO HERNÁNDEZ ALTUVE</td><td>G43287 p1; G43287 p4; G43287 p5; G43290 p6; G43292 p2</td></tr>
+<tr><td>V-19593640</td><td>JUAN CARLOS VILLEGAS BRITO</td><td>mismo_cedula_otro_nombre</td><td><b>JUAN CARLOS VILLEGAS BRITO</b> &harr; VLADÍMIR PADRINO LÓPEZ</td><td>G43287 p1; G43287 p4; G43287 p5; G43290 p6; G43292 p2</td></tr>
+<tr><td>V-19593640</td><td>JUAN CARLOS VILLEGAS BRITO</td><td>mismo_cedula_otro_nombre</td><td><b>JUAN CARLOS VILLEGAS BRITO</b> &harr; ÁNGEL DANIEL BALESTRINI JARAMILLO</td><td>G43287 p1; G43287 p4; G43287 p5; G43290 p6; G43292 p2</td></tr>
+<tr><td>V-19593640</td><td>JUAN CARLOS VILLEGAS BRITO</td><td>mismo_cedula_otro_nombre</td><td><b>JUAN CARLOS VILLEGAS BRITO</b> &harr; ERNESTO EMILIO VILLEGAS POLJAK</td><td>G43287 p1; G43287 p4; G43287 p5; G43290 p6; G43292 p2</td></tr>
+<tr><td>V-19593640</td><td>JUAN CARLOS VILLEGAS BRITO</td><td>mismo_cedula_otro_nombre</td><td><b>JUAN CARLOS VILLEGAS BRITO</b> &harr; GERMÁN EDUARDO PIÑATE RODRÍGUEZ</td><td>G43287 p1; G43287 p4; G43287 p5; G43290 p6; G43292 p2</td></tr>
+</table>
+<p class="small">(50 muestras; ver <code>docs/conflictos_2026.json</code> para listado completo)</p>
+
+<h2>Comparativa contra OpenRouter</h2>
+<table>
+<tr><th>Metrica</th><th>OpenRouter (deepseek-v4-flash:free)</th><th>Ollama local (gemma3:12b)</th></tr>
+<tr><td>Tiempo total</td><td>9.5 min</td><td>3h 14min</td></tr>
+<tr><td>Costo</td><td>$0 (rate-limit upstream)</td><td>$0 (electricidad)</td></tr>
+<tr><td>Personas devueltas</td><td>101</td><td>691</td></tr>
+<tr><td>Personas validadas</td><td>101 (sin filtro)</td><td>554</td></tr>
+<tr><td>Contextos poblados</td><td>57</td><td>401</td></tr>
+<tr><td>Conflictos detectados</td><td>0 (no impl)</td><td>96</td></tr>
+<tr><td>Tipos extraidos</td><td>solo natural</td><td>natural + juridica + organismo</td></tr>
+<tr><td>Throughput</td><td>~60 pag/min</td><td>~4.2 pag/min</td></tr>
+</table>
+
+<p class="small no-print">Generado por <code>scripts/build_benchmark_html.py</code> a partir de <code>docs/bench_2026_ollama.json</code> + queries a Mongo.</p>
+
+</body></html>

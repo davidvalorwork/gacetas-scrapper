@@ -35,6 +35,21 @@ venv.bak/
 .env.local
 .env.*.local
 
+# CodeGraph local index
+.codegraph/
+
+# Extractor LLM runtime artifacts
+progress_llm.json
+ollama_server.log
+ollama_server.err.log
+docs/*.log
+docs/conflictos_*.json
+docs/pre_*.json
+docs/nuevas_*.json
+docs/personas_por_*.json
+docs/gaceta_*_personas.json
+docs/bench_*.json
+
 # IDEs
 .vscode/
 .idea/

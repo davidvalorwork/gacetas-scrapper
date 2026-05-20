@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Benchmark Jun-Jul 2025 - Ollama gemma3:12b</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 1200px; margin: 20px auto; padding: 20px; color: #222; background: #fff; }
+  h1 { border-bottom: 3px solid #003366; padding-bottom: 6px; color: #003366; }
+  h2 { color: #003366; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 30px; }
+  .meta { background: #f8f9fa; border-left: 4px solid #003366; padding: 10px 16px; margin: 16px 0; }
+  .cards { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+  .card { flex: 1 1 200px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; }
+  .card .num { font-size: 1.8em; font-weight: 700; color: #003366; }
+  .card .lbl { font-size: 0.85em; color: #555; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.85em; margin: 10px 0; }
+  th, td { border: 1px solid #ccc; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #e2e8f0; color: #003366; }
+  tr:nth-child(even) { background: #f8fafc; }
+  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 0.72em; font-weight: 700; margin-right: 4px; }
+  .tag-ok { background: #dbeafe; color: #1e40af; }
+  .tag-new { background: #d1fae5; color: #065f46; }
+  .tag-bad { background: #fee2e2; color: #991b1b; }
+  .small { font-size: 0.78em; color: #666; }
+  code { background: #f1f5f9; padding: 1px 5px; border-radius: 3px; font-size: 0.85em; }
+  @media print {
+    body { max-width: 100%; margin: 0; padding: 8mm; font-size: 9pt; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: auto; font-size: 8pt; }
+    tr { page-break-inside: avoid; }
+    .cards { display: block; }
+    .card { display: inline-block; width: 23%; margin: 2px; padding: 8px; }
+    .no-print { display: none; }
+  }
+  @page { size: A4; margin: 10mm; }
+</style>
+</head>
+<body>
+
+<h1>Benchmark Jun-Jul 2025 &mdash; <code>gemma3:12b-it-q4_K_M</code></h1>
+
+<div class="meta">
+  <b>Fecha:</b> 2026-05-20 &nbsp;|&nbsp;
+  <b>Hardware:</b> RTX 3060 12GB &nbsp;|&nbsp;
+  <b>Backend:</b> Ollama local &nbsp;|&nbsp;
+  <b>Gacetas:</b> 50 (jun-jul 2025) &nbsp;|&nbsp;
+  <b>Paginas:</b> 712
+</div>
+
+<div style="margin: 12px 0;">
+  <span class="tag tag-new">NUEVA</span> = persona que el modelo aporto nueva &nbsp;
+  <span class="tag tag-ok">YA-ESTABA</span> = persona pre-existente revalidada &nbsp;
+  <span class="tag tag-bad">CONFLICT</span> = marcada `por_verificar`
+</div>
+
+<h2>Resumen ejecutivo</h2>
+<div class="cards">
+  <div class="card"><div class="num">175 min</div><div class="lbl">Tiempo total (2.9 h)</div></div>
+  <div class="card"><div class="num">1236</div><div class="lbl">Devueltas por el modelo</div></div>
+  <div class="card"><div class="num">1009</div><div class="lbl">Validadas (kept)</div></div>
+  <div class="card"><div class="num">155</div><div class="lbl">Nuevas creadas</div></div>
+  <div class="card"><div class="num">510</div><div class="lbl">Pre-existentes actualizadas</div></div>
+  <div class="card"><div class="num">369</div><div class="lbl">Conflictos / baja confianza</div></div>
+</div>
+
+<h2>Pre-existentes vs nuevas (universo Jun-Jul 2025)</h2>
+<table>
+<tr><th>Categoria</th><th>Conteo</th></tr>
+<tr><td>Personas unicas mencionadas en Jun-Jul 2025</td><td><b>1,001</b></td></tr>
+<tr><td><span class="tag tag-ok">YA-ESTABA</span> Pre-existentes revalidadas por gemma3</td><td><b>819</b></td></tr>
+<tr><td><span class="tag tag-new">NUEVA</span> Personas nuevas aportadas por gemma3</td><td><b>182</b></td></tr>
+<tr><td>&nbsp;&nbsp;de los cuales naturales (V-/E-)</td><td>80</td></tr>
+<tr><td>&nbsp;&nbsp;organismos (gobierno)</td><td>98</td></tr>
+<tr><td>&nbsp;&nbsp;juridicas (RIF)</td><td>4</td></tr>
+<tr><td><span class="tag tag-bad">CONFLICT</span> Marcadas <code>por_verificar</code></td><td>293</td></tr>
+</table>
+
+<h2>Personas por gaceta (top 30)</h2>
+<table>
+<tr><th>Gaceta</th><th>Fecha</th><th>Personas</th><th>Paginas con personas</th></tr>
+<tr><td>43157</td><td>26/06/2025</td><td><b>84</b></td><td>18</td></tr>
+<tr><td>43145</td><td>09/06/2025</td><td><b>52</b></td><td>7</td></tr>
+<tr><td>43143</td><td>05/06/2025</td><td><b>47</b></td><td>11</td></tr>
+<tr><td>43177</td><td>25/07/2025</td><td><b>45</b></td><td>13</td></tr>
+<tr><td>43172</td><td>17/07/2025</td><td><b>40</b></td><td>11</td></tr>
+<tr><td>43164</td><td>07/07/2025</td><td><b>39</b></td><td>15</td></tr>
+<tr><td>43142</td><td>04/06/2025</td><td><b>38</b></td><td>10</td></tr>
+<tr><td>43156</td><td>25/06/2025</td><td><b>38</b></td><td>17</td></tr>
+<tr><td>43169</td><td>14/07/2025</td><td><b>38</b></td><td>21</td></tr>
+<tr><td>43148</td><td>12/06/2025</td><td><b>38</b></td><td>7</td></tr>
+<tr><td>43161</td><td>02/07/2025</td><td><b>38</b></td><td>10</td></tr>
+<tr><td>43175</td><td>22/07/2025</td><td><b>37</b></td><td>14</td></tr>
+<tr><td>43163</td><td>04/07/2025</td><td><b>37</b></td><td>13</td></tr>
+<tr><td>43144</td><td>06/06/2025</td><td><b>36</b></td><td>7</td></tr>
+<tr><td>43173</td><td>18/07/2025</td><td><b>33</b></td><td>11</td></tr>
+<tr><td>43151</td><td>17/06/2025</td><td><b>32</b></td><td>11</td></tr>
+<tr><td>43179</td><td>29/07/2025</td><td><b>32</b></td><td>13</td></tr>
+<tr><td>43155</td><td>23/06/2025</td><td><b>31</b></td><td>19</td></tr>
+<tr><td>43140</td><td>02/06/2025</td><td><b>30</b></td><td>4</td></tr>
+<tr><td>43153</td><td>19/06/2025</td><td><b>30</b></td><td>8</td></tr>
+<tr><td>43162</td><td>03/07/2025</td><td><b>30</b></td><td>7</td></tr>
+<tr><td>43176</td><td>23/07/2025</td><td><b>30</b></td><td>9</td></tr>
+<tr><td>43166</td><td>09/07/2025</td><td><b>28</b></td><td>6</td></tr>
+<tr><td>43165</td><td>08/07/2025</td><td><b>27</b></td><td>9</td></tr>
+<tr><td>43146</td><td>10/06/2025</td><td><b>26</b></td><td>11</td></tr>
+<tr><td>43170</td><td>15/07/2025</td><td><b>26</b></td><td>11</td></tr>
+<tr><td>43167</td><td>10/07/2025</td><td><b>26</b></td><td>14</td></tr>
+<tr><td>43147</td><td>11/06/2025</td><td><b>25</b></td><td>10</td></tr>
+<tr><td>43171</td><td>16/07/2025</td><td><b>23</b></td><td>13</td></tr>
+<tr><td>43158</td><td>27/06/2025</td><td><b>22</b></td><td>15</td></tr>
+</table>
+<p class="small">Total gacetas con menciones: 48 / 50</p>
+
+<h2>Personas por pagina (top 40 paginas con mas menciones)</h2>
+<table>
+<tr><th>Gaceta</th><th>Pagina</th><th>Personas en pagina</th></tr>
+<tr><td>43157</td><td>12</td><td><b>18</b></td></tr>
+<tr><td>43169</td><td>2</td><td><b>18</b></td></tr>
+<tr><td>43173</td><td>3</td><td><b>18</b></td></tr>
+<tr><td>43144</td><td>3</td><td><b>17</b></td></tr>
+<tr><td>43153</td><td>1</td><td><b>15</b></td></tr>
+<tr><td>43172</td><td>7</td><td><b>15</b></td></tr>
+<tr><td>43157</td><td>7</td><td><b>14</b></td></tr>
+<tr><td>43157</td><td>11</td><td><b>14</b></td></tr>
+<tr><td>43143</td><td>6</td><td><b>13</b></td></tr>
+<tr><td>43145</td><td>7</td><td><b>13</b></td></tr>
+<tr><td>43148</td><td>3</td><td><b>13</b></td></tr>
+<tr><td>43162</td><td>4</td><td><b>13</b></td></tr>
+<tr><td>43163</td><td>3</td><td><b>13</b></td></tr>
+<tr><td>43173</td><td>2</td><td><b>13</b></td></tr>
+<tr><td>43140</td><td>2</td><td><b>12</b></td></tr>
+<tr><td>43142</td><td>3</td><td><b>12</b></td></tr>
+<tr><td>43145</td><td>3</td><td><b>12</b></td></tr>
+<tr><td>43148</td><td>2</td><td><b>12</b></td></tr>
+<tr><td>43161</td><td>13</td><td><b>12</b></td></tr>
+<tr><td>43140</td><td>4</td><td><b>11</b></td></tr>
+<tr><td>43142</td><td>2</td><td><b>11</b></td></tr>
+<tr><td>43146</td><td>6</td><td><b>11</b></td></tr>
+<tr><td>43161</td><td>6</td><td><b>11</b></td></tr>
+<tr><td>43164</td><td>2</td><td><b>11</b></td></tr>
+<tr><td>43165</td><td>10</td><td><b>11</b></td></tr>
+<tr><td>43176</td><td>2</td><td><b>11</b></td></tr>
+<tr><td>43151</td><td>10</td><td><b>10</b></td></tr>
+<tr><td>43156</td><td>6</td><td><b>10</b></td></tr>
+<tr><td>43157</td><td>10</td><td><b>10</b></td></tr>
+<tr><td>43167</td><td>3</td><td><b>10</b></td></tr>
+<tr><td>43175</td><td>2</td><td><b>10</b></td></tr>
+<tr><td>43143</td><td>7</td><td><b>9</b></td></tr>
+<tr><td>43144</td><td>2</td><td><b>9</b></td></tr>
+<tr><td>43145</td><td>4</td><td><b>9</b></td></tr>
+<tr><td>43145</td><td>5</td><td><b>9</b></td></tr>
+<tr><td>43152</td><td>2</td><td><b>9</b></td></tr>
+<tr><td>43156</td><td>8</td><td><b>9</b></td></tr>
+<tr><td>43157</td><td>14</td><td><b>9</b></td></tr>
+<tr><td>43159</td><td>9</td><td><b>9</b></td></tr>
+<tr><td>43162</td><td>1</td><td><b>9</b></td></tr>
+</table>
+
+<h2>Detalle por gaceta (top 15 con personas etiquetadas)</h2>
+<table>
+<tr><th>Gaceta</th><th>Conteo</th><th>Personas etiquetadas (primeras 12)</th></tr>
+<tr><td><b>43157</b><br><span class='small'>26/06/2025</span></td><td>84 personas / 18 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_LA_DEFENSA</code> p.1 &mdash; MINISTERIO DEL PODER POPULAR PARA LA DEFENSA <span class='small'>(Resolución conjunta)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_LA_CIENCIA_Y_TECNOLOGIA</code> p.1 &mdash; Ministerio del Poder Popular para la Ciencia y Tecnolog <span class='small'>()</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_LA_SALUD</code> p.1 &mdash; MINISTERIO DEL PODER POPULAR PARA LA SALUD <span class='small'>(designa a la ciudadana Oraima Gregoria Alfaro Roja)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_LA_ALIMENTACION</code> p.1 &mdash; Ministerio del Poder Popular para la Alimentación <span class='small'>(empresa adscrita a la CORPORACIÓN ÚNICA DE SERVICI)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-15047115</code> p.2 &mdash; JUAN CARLOS BRICEÑO QUEVEDO
+CI <span class='small'>(PRESIDENTE)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-4939295</code> p.2 &mdash; Carlos Manuel Campero Peraza <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-16541287</code> p.2 &mdash; INDHRIANA MARÍA PARADA RODRÍGUEZ <span class='small'>(Miembros Suplentes)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-18825570</code> p.2 &mdash; PELLIDO   APELLIDO <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-10009932</code> p.2 &mdash; Miembro Suplente <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-17627547</code> p.2 &mdash; HECTOR JOS <span class='small'>(Presidente de la empresa CONGLOMERADO PRODUCTIVO, )</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-7352732</code> p.2 &mdash; TECNOLOGÍA Col <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-21495350</code> p.2 &mdash; ALEX SAAB <span class='small'>(en Calidad de encargado (E))</span></li></ul></td></tr>
+<tr><td><b>43145</b><br><span class='small'>09/06/2025</span></td><td>52 personas / 7 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-16994099</code> p.1 &mdash; RICARDO MANUEL SILVA DÍAZ <span class='small'>(JEFE DE DIVISIÓN (ENCARGADO))</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-13100097</code> p.1 &mdash; Abogado ADRIS RAFAEL
+ESCOBAR <span class='small'>(FISCAL AUXILIAR INTERINO)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-15352624</code> p.1 &mdash; Abogado JOMAN ARMANDO
+SUÁREZ <span class='small'>(FISCAL PROVISORIO)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-21353291</code> p.1 &mdash; Abogado DARRYS JESÚS CONTRERAS ANGULO <span class='small'>(FISCAL AUXILIAR INTERINO)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-18053000</code> p.1 &mdash; ESTHER MARINA ARCILA
+MACHADO <span class='small'>(Contralora con carácter provisional)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_PUBLICO</code> p.1 &mdash; Ministerio Público <span class='small'>(atribuciones)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:CONTRALORIA_GENERAL_DE_LA_REPUBLICA</code> p.1 &mdash; CONTRALORÍA GENERAL DE LA REPÚBLICA <span class='small'>(conocerá todo lo relacionado al Reconocimiento)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-16967809</code> p.3 &mdash; CÉDULAS DE
+  APELLIDOS <span class='small'>(PRESIDENTE)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-9527050</code> p.3 &mdash; JULIO JOSÉ ATACHO VELAZCO <span class='small'>(DIRECTORES PRINCIPALES)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-4562928</code> p.3 &mdash; JOSÉ ALBERTO ANGULO NÚÑEZ <span class='small'>(DIRECTORES SUPLENTES)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-6902415</code> p.3 &mdash; RUBÉN DARÍO
+BARTOLI OCHOA <span class='small'>(DIRECTORES PRINCIPALES)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-10332942</code> p.3 &mdash; FÉLIX EDUARDO ROJAS MARTÍNEZ <span class='small'>()</span></li></ul></td></tr>
+<tr><td><b>43143</b><br><span class='small'>05/06/2025</span></td><td>47 personas / 11 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-bad">CONFLICT</span> <code>V-14164814</code> p.1 &mdash; JIMMY BERRÍOS OJEDA <span class='small'>(Presidente de la Junta Liquidadora)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-15656131</code> p.1 &mdash; KAREM EMILK <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-24902172</code> p.1 &mdash; ROSCIRIS DALISKA
+MARTÍNEZ PAZ LABRADOR SANTANA <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-9527050</code> p.1 &mdash; JULIO JOSÉ ATACHO VELAZCO <span class='small'>(DIRECTORES PRINCIPALES)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-6488545</code> p.1 &mdash; Guillermo Blanco Vázquez <span class='small'>(Director General de la Escuela Nacional de la Magi)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-11468002</code> p.2 &mdash; ACADÉMICA
+ALBERTO JOSE <span class='small'>(Director (E))</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-20240658</code> p.2 &mdash; Amalia de la Coromoto Ruiz Ortiz <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-15120972</code> p.2 &mdash; JUAN CARLOS PÉREZ VEGA <span class='small'>(Gerente de la Oficina de Gestión Administrativa)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-10522682</code> p.2 &mdash; Thais Nayibeth Grimón <span class='small'>(Directora de Recursos Humanos)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-11944545</code> p.2 &mdash; Mariana Coromoto García Palacios <span class='small'>(Directora Docente)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-14164814</code> p.2 &mdash; JIMMY BERRÍOS OJEDA <span class='small'>(Presidente de la Junta Liquidadora)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-14158625</code> p.3 &mdash; PABLO EMILIO GIMÉNEZ MÉNDEZ <span class='small'>(ejercerá el cargo de PRESIDENTE)</span></li></ul></td></tr>
+<tr><td><b>43177</b><br><span class='small'>25/07/2025</span></td><td>45 personas / 13 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-18134505</code> p.1 &mdash; Carlos Eduardo Hidrobo Vigil <span class='small'>(Director General (E) de la Dirección General de De)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-14584865</code> p.1 &mdash; Leidi Laura Estredo Rodríguez <span class='small'>(Registradora Civil Accidental)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-6428278</code> p.2 &mdash; MARIA DEL VALLE CARNEIRO DE GARCIA <span class='small'>(Presidenta de la Fundación Nacional “El Niño Simón)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-17698401</code> p.2 &mdash; KAREN MIGUENS ALBERT <span class='small'>(designada como DIRECTORA de la Fundación Regional )</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-3863883</code> p.2 &mdash; La   YUDITH MARGARITA PARRA DE RODRIGUEZ <span class='small'>(Presidenta en calidad de encargada de la Fundación)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-15612282</code> p.2 &mdash; OSLIN LORENA BENITEZ
+ROSALES <span class='small'>(designada como DIRECTORA DE LA OFICINA DE PLANIFIC)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-8714253</code> p.3 &mdash; JORGE ELIESER
+MARQUEZ MONSALVE <span class='small'>(Presidente de la Fundación Radio Miraflores)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-6235930</code> p.3 &mdash; CAROLINA DEL VALLE <span class='small'>(miembro principales del Consejo Directivo)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-13468262</code> p.3 &mdash; JOSÉ
+HOLBERG ZAMBRANO GONZÁLEZ <span class='small'>(miembro principales del Consejo Directivo)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-9099735</code> p.3 &mdash; JAVIER JOSE GREGORIO KEY <span class='small'>(miembro principales del Consejo Directivo)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-14874436</code> p.3 &mdash; IZAGUIRRE ALVAREZ MAIGUALIDA IZAGUIRRE
+FINANCIERA CC <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-13126074</code> p.3 &mdash; FLORES CHIRINOS MARTINEZ <span class='small'>()</span></li></ul></td></tr>
+<tr><td><b>43172</b><br><span class='small'>17/07/2025</span></td><td>40 personas / 11 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-bad">CONFLICT</span> <code>V-11684094</code> p.2 &mdash; Unica de
+Servicios Productivos y Alimentarios <span class='small'>(designado como Embajador Extraordinario y Plenipot)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-10088768</code> p.2 &mdash; IMAD SAAB SAAB <span class='small'>(designado como Embajador Extraordinario y Plenipot)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-16564645</code> p.3 &mdash; YADETSY JOSEFINA
+GARRIDO PACHECO <span class='small'>(designada como Directora General de Rendimientos)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-13225122</code> p.3 &mdash; GABRIELA
+SERVILIA JIMENEZ RAMÍREZ <span class='small'>(actuando como Ministra del Poder Popular para la C)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-15647448</code> p.7 &mdash; DIRECTORES PRINCIPALES
+CARMEN CAMEJO <span class='small'>(Presidente de la Fundación)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-3162462</code> p.7 &mdash; MARIANA RIOS
+
+PEDRO SÁNCHEZ <span class='small'>(Director)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-18288141</code> p.7 &mdash; MIEMBROS PRINCIPALES MIEMBROS SUPLENTES
+
+DEIRA CONTRERA <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-4167853</code> p.7 &mdash; CESAR LIENDO <span class='small'>(Director)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-17014086</code> p.7 &mdash; JULIO SALAZAR <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-17977728</code> p.7 &mdash; CORALY
+ALEJANDRA MILLAN DECENA <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-14585838</code> p.7 &mdash; RAQUEL ACOSTA ANDRADE <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-14494512</code> p.7 &mdash; RAQUEL ACOSTA ANDRADE <span class='small'>()</span></li></ul></td></tr>
+<tr><td><b>43164</b><br><span class='small'>07/07/2025</span></td><td>39 personas / 15 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-new">NUEVA</span> <code>ORG:CNTI</code> p.1 &mdash; CNTI <span class='small'>(Contrataciones Públicas)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_LA_CIENCIA_Y_TECNOLOGIA</code> p.1 &mdash; Ministerio del Poder Popular para la Ciencia y Tecnolog <span class='small'>()</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_LA_JUVENTUD</code> p.1 &mdash; MINISTERIO DEL PODER POPULAR PARA LA JUVENTUD <span class='small'>(Resolución mediante la cual se corrige la Resoluci)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:CONTRALORIA_GENERAL_DE_LA_REPUBLICA</code> p.1 &mdash; CONTRALORÍA GENERAL DE LA REPÚBLICA <span class='small'>(conocerá todo lo relacionado al Reconocimiento)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_PUBLICO</code> p.1 &mdash; Ministerio Público <span class='small'>(atribuciones)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-14225358</code> p.2 &mdash; RAMÓN JOSÉ GUEVARA ABREU RAFAEL DAVID <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-10381590</code> p.2 &mdash; María Ratia <span class='small'>(Miembros Principales y Suplentes)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-19015463</code> p.2 &mdash; Kismet Rondón <span class='small'>(Miembros Principales y Suplentes)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-20130589</code> p.2 &mdash; SERGIO JULIO LOTARTARO TOVAR <span class='small'>(MINISTRO DEL PODER POPULAR PARA LA JUVENTUD)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-6454063</code> p.2 &mdash; REINALDO ARGENIS QUINTERO CHACÓN <span class='small'>(DIRECTOR GENERAL DE LA OFICINA DE GESTIÓN ADMINIST)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-19593640</code> p.2 &mdash; JUAN CARLOS VILLEGAS BRITO <span class='small'>(concede la nacionalidad Venezolana por Naturalizac)</span></li><li><span class="tag tag-new">NUEVA</span> <code>V-16472720</code> p.2 &mdash; Heiser Díaz <span class='small'>(Miembros Principales y Suplentes)</span></li></ul></td></tr>
+<tr><td><b>43142</b><br><span class='small'>04/06/2025</span></td><td>38 personas / 10 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-16672333</code> p.2 &mdash; Ramírez Fernández <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-14164814</code> p.2 &mdash; JIMMY BERRÍOS OJEDA <span class='small'>(Presidente de la Junta Liquidadora)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-19318</code> p.2 &mdash; ESTEFANIA MARGARITA GARCÍA SÁNCHEZ <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-11832584</code> p.2 &mdash; ANÍBAL EDUARDO CORONADO MILLÁN <span class='small'>(DIRECTOR GENERAL)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-19000184</code> p.2 &mdash; SAÚL FRANCISCO
+AMELIACH RANGEL <span class='small'>()</span></li><li><span class="tag tag-new">NUEVA</span> <code>V-1089584</code> p.2 &mdash; Desconocido <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-11346596</code> p.2 &mdash; DE LA
+MARQUEZ MONSALVE  
+CESAR AUGUSTO <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-11496429</code> p.2 &mdash; MIGUEL ÁNGEL RAMONES GALVIZ <span class='small'>()</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_EL_ECOSOCIALISMO</code> p.2 &mdash; Ministerio del Poder Popular para el Ecosocialismo <span class='small'>(Resolución N* 066)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:BANCO_DEL_TESORO_C_A</code> p.2 &mdash; Banco del Tesoro, C.A. <span class='small'>()</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:SERVICIO_AUTONOMO_IMPRENTA_NACIONAL_Y_GACETA_OFICIAL</code> p.2 &mdash; Servicio Autónomo Imprenta Nacional y Gaceta Oficial <span class='small'>(dar carácter oficial a las publicaciones)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-8714253</code> p.3 &mdash; JORGE ELIESER
+MARQUEZ MONSALVE <span class='small'>(Presidente de la Fundación Radio Miraflores)</span></li></ul></td></tr>
+<tr><td><b>43156</b><br><span class='small'>25/06/2025</span></td><td>38 personas / 17 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-19186840</code> p.3 &mdash; MANUEL ANTONIO GONZÁLEZ ARAUJO <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-14688680</code> p.3 &mdash; DORIANI DEL VALLE
+
+RODRÍGUEZ HERRERA <span class='small'>(designada como Directora General)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-6290130</code> p.3 &mdash; ELIZABETH RODRÍGUEZ
+PÉREZ <span class='small'>(designada como Directora General)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-19593640</code> p.3 &mdash; JUAN CARLOS VILLEGAS BRITO <span class='small'>(concede la nacionalidad Venezolana por Naturalizac)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-10300226</code> p.4 &mdash; JOSÉ DAVID CABELLO RONDÓN <span class='small'>(Superintendente del Servicio Nacional Integrado de)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-7942974</code> p.4 &mdash; GINETTE DE JESÚS GARCÍA TREJO <span class='small'>(designada como Gerente)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-23944942</code> p.4 &mdash; FRANCYS ROXIMAR
+GUACARÁN VARELA <span class='small'>(designada como Directora General)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-21067648</code> p.5 &mdash; Designar la   SINAI CAROLINA GARCÍA BOGARIN <span class='small'>(CONSULTORA JURÍDICA)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_LA_EDUCACION_UNIVERSITARIA</code> p.5 &mdash; Ministerio del Poder Popular para la Educación Universi <span class='small'>(RESOLUCIÓN N* 076)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:CONSEJO_NACIONAL_DE_UNIVERSIDADES</code> p.5 &mdash; Consejo Nacional de Universidades <span class='small'>(Sesión Ordinaria)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-15831339</code> p.6 &mdash; HERNÁN GABRIEL MAYORA VIERA <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-9297376</code> p.6 &mdash; JOSÉ FÉLIX ÁLVAREZ TINEO <span class='small'>(Junta Directiva)</span></li></ul></td></tr>
+<tr><td><b>43169</b><br><span class='small'>14/07/2025</span></td><td>38 personas / 21 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-18990694</code> p.2 &mdash; CÉSAR EDUARDO
+SERVITÁ RANGEL <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>G-200121220</code> p.2 &mdash; Información Fiscal <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-6122963</code> p.2 &mdash; WA Mirlistro del     Para la Défensa <span class='small'>(Fiscal General de la República)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-10406209</code> p.2 &mdash; KATHERINE DEL CARMEN TERMINI
+MARTÍNEZ <span class='small'>(Presidente de la Junta Directiva)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-11063803</code> p.2 &mdash; GERMAN IGNACIO TERMINI GUZMÁN <span class='small'>(Vicepresidente de la Junta Directiva)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-6857541</code> p.2 &mdash; Sistema Integrado <span class='small'>(Directores Principales)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-10632123</code> p.2 &mdash; FERNANDO
+MALDONADO <span class='small'>(Directores Principales)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-12060819</code> p.2 &mdash; General de Brigada EMILIANO ERNESTO
+CEGARRA <span class='small'>(Directores Principales)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-9795711</code> p.2 &mdash; General de División RAFAEL ÁNGEL SUÁREZ <span class='small'>(Directores Suplentes)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-12552667</code> p.2 &mdash; General de Brigada LUIS
+ALBERTO MORENO <span class='small'>(Directores Suplentes)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-11912494</code> p.2 &mdash; Supient   Suplente
+
+MORALES <span class='small'>(Directores Suplentes)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-6857</code> p.2 &mdash; Elio Ramón Estrada Paredes <span class='small'>()</span></li></ul></td></tr>
+<tr><td><b>43148</b><br><span class='small'>12/06/2025</span></td><td>38 personas / 7 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-bad">CONFLICT</span> <code>V-11684094</code> p.1 &mdash; Unica de
+Servicios Productivos y Alimentarios <span class='small'>(designado como Embajador Extraordinario y Plenipot)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_LA_DEFENSA</code> p.1 &mdash; MINISTERIO DEL PODER POPULAR PARA LA DEFENSA <span class='small'>(Resolución conjunta)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_PARA_RELACIONES_EXTERIORES</code> p.1 &mdash; Ministerio del Poder Popular para Relaciones Exteriores <span class='small'>(solicitud del Ejecutivo Nacional)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:ASAMBLEA_NACIONAL</code> p.1 &mdash; Asamblea Nacional <span class='small'>(ACUERDO PARA DENUNCIAR A LA UNIÓN EUROPEA)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:SERVICIO_AUTONOMO_IMPRENTA_NACIONAL_Y_GACETA_OFICIAL</code> p.1 &mdash; Servicio Autónomo Imprenta Nacional y Gaceta Oficial <span class='small'>(dar carácter oficial a las publicaciones)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>G-20010851</code> p.2 &mdash; CONSTRUCTORA DE LA FUERZA ARMADA    
+CONSTRUFANEB <span class='small'>(creada mediante decreto N” 668 de fecha 10 de dici)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-11431982</code> p.2 &mdash; QUINTO
+
+Considerar <span class='small'>(PRESIDENTE DE LA EMPRESA CONSTRUCTORA DE FUERZA AR)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-10272168</code> p.2 &mdash; DE LA   DE  
+
+DE <span class='small'>(Miembros Principales)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-19202206</code> p.2 &mdash; DE LA   DE  
+
+DE <span class='small'>(Miembros Suplentes)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-19552220</code> p.2 &mdash; DE LA   DE <span class='small'>(Miembros Suplentes)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-16433073</code> p.2 &mdash; Indira Violeta Vera Rodríguez <span class='small'>(Secretaria de la Comisión de Contrataciones Públic)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-18437347</code> p.2 &mdash; Johan
+Gerardo Castillo Nadal <span class='small'>(Suplente)</span></li></ul></td></tr>
+<tr><td><b>43161</b><br><span class='small'>02/07/2025</span></td><td>38 personas / 10 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-11832584</code> p.4 &mdash; ANÍBAL EDUARDO CORONADO MILLÁN <span class='small'>(DIRECTOR GENERAL)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-13138512</code> p.4 &mdash; MARITZA ALEJANDRA CORREA
+VISO <span class='small'>(DIRECTORA GENERAL DE LA OFICINA DE GESTIÓN COMUNIC)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-10074531</code> p.5 &mdash; SORAIDA RAMIREZ OSORIO <span class='small'>(Presidenta Encargada del Instituto Autónomo Consej)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-12500806</code> p.5 &mdash; MIGUEL ANGEL ANDRADE SUAREZ <span class='small'>(designado en el cargo de GERENTE ENCARGADO)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-6910300</code> p.5 &mdash; JUAN CARLOS <span class='small'>(Presidente Encargado de la Fundación Fondo para la)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-6910300</code> p.6 &mdash; JUAN CARLOS <span class='small'>(Presidente Encargado de la Fundación Fondo para la)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-5970718</code> p.6 &mdash; Nombre y Apellido <span class='small'>(Director Principal)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-16725438</code> p.6 &mdash; Vanessa Rolón Absueta <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-14721678</code> p.6 &mdash; Principal
+Jesús Rafael Vegas Cadavid <span class='small'>(Director Principal)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-13939085</code> p.6 &mdash; Principal
+Josmar Enrique Vanegas Moreno <span class='small'>(Director Principal)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-10075883</code> p.6 &mdash; Estevan Erasmo Fajardo Orozco <span class='small'>(Director Suplente)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-16877864</code> p.6 &mdash; Matilde Carmen María Rojas <span class='small'>(Directora Suplente)</span></li></ul></td></tr>
+<tr><td><b>43175</b><br><span class='small'>22/07/2025</span></td><td>37 personas / 14 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-bad">CONFLICT</span> <code>V-13049461</code> p.2 &mdash; GADA NEPTALÍ DE
+JESÚS ACOSTA PRIETO <span class='small'>(Presidente de la EMPRESA MIXTA BOLIVARIANA CANCORF)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>G-200111046</code> p.2 &mdash; Información Fiscal <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-17961794</code> p.2 &mdash; Niazoa Puertas
+CL <span class='small'>(Miembro del Comité de Licitaciones)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-18110922</code> p.2 &mdash; Niazoa Puertas
+CL <span class='small'>(Miembro del Comité de Licitaciones)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-12068566</code> p.2 &mdash; Ochoa Jiménez <span class='small'>(Miembro del Comité de Licitaciones)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-14192854</code> p.2 &mdash; JENNY ANGÉLICA
+MARTÍNEZ CAMEJO <span class='small'>(Miembro del Comité de Licitaciones)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-19185490</code> p.2 &mdash; Martínez Belisario
+Cl <span class='small'>(Miembro del Comité de Licitaciones)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-20996496</code> p.2 &mdash; Martínez Belisario
+Cl <span class='small'>(Miembro del Comité de Licitaciones)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-20759056</code> p.2 &mdash; Michael Germaine Carrera Pimentel <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-12112171</code> p.2 &mdash; Katiuska del Valle Larez Guevara <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-13049461</code> p.3 &mdash; GADA NEPTALÍ DE
+JESÚS ACOSTA PRIETO <span class='small'>(Presidente de la EMPRESA MIXTA BOLIVARIANA CANCORF)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>G-200111046</code> p.3 &mdash; Información Fiscal <span class='small'>()</span></li></ul></td></tr>
+<tr><td><b>43163</b><br><span class='small'>04/07/2025</span></td><td>37 personas / 13 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-3952717</code> p.2 &mdash; PEDRO ANTONIO SASSONE GARCÍA <span class='small'>(Responsable de los fondos en anticipo y en avance)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-21495350</code> p.3 &mdash; ALEX SAAB <span class='small'>(en Calidad de encargado (E))</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-15047115</code> p.3 &mdash; JUAN CARLOS BRICEÑO QUEVEDO
+CI <span class='small'>(PRESIDENTE)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-16803560</code> p.3 &mdash; Varela Domínguez
+Rahelenys Josué <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-1229904750</code> p.3 &mdash; Carlos Eduardo <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-15711120</code> p.3 &mdash; RAHELENYS JOSUÉ BURGOS SANTAELLA <span class='small'>(DIRECTORES PRINCIPALES)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-29904750</code> p.3 &mdash; CARLOS EDUARDO PEREA RANGEL <span class='small'>(DIRECTORES PRINCIPALES)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-18430631</code> p.3 &mdash; MIGUELANGEL ANTONIO MARTOS
+RODRÍGUEZ <span class='small'>(Presidente)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-16541287</code> p.3 &mdash; INDHRIANA MARÍA PARADA RODRÍGUEZ <span class='small'>(Miembros Suplentes)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-22558847</code> p.3 &mdash; Pl
+
+ADRIÁN ENRIQUE FIGUEROA BARRIOS <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-15407115</code> p.3 &mdash; JUAN CARLOS BRICEÑO QUEVEDO <span class='small'>(DIRECTORES PRINCIPALES)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-28429197</code> p.3 &mdash; ORIANA PATRICIA PÉREZ CABELLO <span class='small'>()</span></li></ul></td></tr>
+<tr><td><b>43144</b><br><span class='small'>06/06/2025</span></td><td>36 personas / 7 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-6978896</code> p.1 &mdash; ERNESTO CAMILO RIVERO CASTAÑEDA <span class='small'>(Presidente de la Fundación Instituto Venezolano de)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:SERVICIO_AUTONOMO_IMPRENTA_NACIONAL_Y_GACETA_OFICIAL</code> p.1 &mdash; Servicio Autónomo Imprenta Nacional y Gaceta Oficial <span class='small'>(dar carácter oficial a las publicaciones)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>J-504546259</code> p.2 &mdash; Único de
+Información Fiscal <span class='small'>(aprobación de planos y estudio de factibilidad)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-6851685</code> p.2 &mdash; CARLOS
+AUGUSTO LEAL TELLERÍA <span class='small'>(Ministro del Poder Popular para la Alimentación)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-16474</code> p.2 &mdash; ALEJANDRO RAMÓN ÁVILA DÁVILA <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-10351</code> p.2 &mdash; LORENA NAZARETH REYNA JIMENEZ <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-9996611</code> p.2 &mdash; YOLIMAR MEZA <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-16597333</code> p.2 &mdash; HECT OR VALENTIN SANCHEZ COLMENAREZ <span class='small'>(DIRECTORES SUPLENTES)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-6978896</code> p.2 &mdash; ERNESTO CAMILO RIVERO CASTAÑEDA <span class='small'>(Presidente de la Fundación Instituto Venezolano de)</span></li><li><span class="tag tag-new">NUEVA</span> <code>V-10860122</code> p.2 &mdash; MILAGROS DEL VALLE GONZÁLEZ HERRERA <span class='small'>(Directora Ejecutiva)</span></li><li><span class="tag tag-new">NUEVA</span> <code>ORG:MINISTERIO_DEL_PODER_POPULAR_DE_DESARROLLO_MINERO_ECOLOGICO</code> p.2 &mdash; Ministerio del Poder Popular de Desarrollo Minero Ecoló <span class='small'>(DESPACHO DEL MINISTRO)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-6117310</code> p.3 &mdash; MARCO ANTONIO CASTRO <span class='small'>(Presidente Encargado)</span></li></ul></td></tr>
+<tr><td><b>43173</b><br><span class='small'>18/07/2025</span></td><td>33 personas / 11 pags</td><td><ul style='margin:4px 0;padding-left:18px;'><li><span class="tag tag-bad">CONFLICT</span> <code>V-10485716</code> p.1 &mdash; Domínguez Alvarenga <span class='small'>(Orden a la Paz)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-16865558</code> p.2 &mdash; JHOVANA CAROLINA CAMARGO RODRIGUEZ <span class='small'>()</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>G-20010719</code> p.2 &mdash; Información Fiscal <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-6122963</code> p.2 &mdash; WA Mirlistro del     Para la Défensa <span class='small'>(Fiscal General de la República)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-10406209</code> p.2 &mdash; KATHERINE DEL CARMEN TERMINI
+MARTÍNEZ <span class='small'>(Presidente de la Junta Directiva)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-9790427</code> p.2 &mdash; GENERAL DE DIVISIÓN JORGE LUIS VALBUENA <span class='small'>(Presidente de la Empresa)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-10632123</code> p.2 &mdash; FERNANDO
+MALDONADO <span class='small'>(Directores Principales)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-9694120</code> p.2 &mdash; Principal CORONEL GERMÁN SEGUNDO RÍOS CORONA <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-11307667</code> p.2 &mdash; FREDDY JOSÉ MAGO MAGO <span class='small'>(Director Suplente)</span></li><li><span class="tag tag-ok">YA-ESTABA</span> <code>V-17682903</code> p.2 &mdash; TENIENTE CORONEL LUIS MIGUEL VILLALOBOS VALBUENA <span class='small'>()</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-15455252</code> p.2 &mdash; TENIENTE CORONEL WILMER ISRAEL DÍAZ
+RODRÍGUEZ <span class='small'>(Director Suplente)</span></li><li><span class="tag tag-bad">CONFLICT</span> <code>V-14378813</code> p.2 &mdash; Teniente de Navío María Ysabel León <span class='small'>(Secretaria de la Junta Directiva)</span></li></ul></td></tr>
+</table>
+<p class="small">Listado completo en <code>docs/personas_por_pagina_jun_jul_2025.json</code></p>
+
+<h2>Comparativa vs run 2026</h2>
+<table>
+<tr><th>Metrica</th><th>2026 (59 gacetas)</th><th>Jun-Jul 2025 (50 gacetas)</th></tr>
+<tr><td>Paginas</td><td>556</td><td>712</td></tr>
+<tr><td>Chunks</td><td>92</td><td>128</td></tr>
+<tr><td>Tiempo</td><td>3h 14m</td><td>2.9h</td></tr>
+<tr><td>Devueltas</td><td>691</td><td>1236</td></tr>
+<tr><td>Validadas</td><td>554</td><td>1009</td></tr>
+<tr><td>Nuevas creadas</td><td>132</td><td>155</td></tr>
+<tr><td>Pre-existentes actualizadas</td><td>333</td><td>510</td></tr>
+<tr><td>Conflictos detectados</td><td>96</td><td>369</td></tr>
+</table>
+
+<p class="small no-print">Generado por <code>scripts/build_benchmark_jun_jul_2025.py</code></p>
+
+</body></html>
