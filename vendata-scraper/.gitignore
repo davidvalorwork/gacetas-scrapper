@@ -1,0 +1,7 @@
+node_modules/
+progress.json
+scrape.log
+
+# Exportaciones crudas (pesadas): se versionan solo las comprimidas (.gz / .zip)
+exports/*.ndjson
+exports/*.csv
