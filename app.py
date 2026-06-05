@@ -17,6 +17,7 @@ db = client[MONGO_DB_NAME]
 
 # Register API v1 endpoints
 from src.api.v1.routes import api_v1_bp
+from src.api.v1.utils import build_accent_insensitive_regex
 app.register_blueprint(api_v1_bp)
 
 @app.route('/')
@@ -36,13 +37,20 @@ def api_search():
     and_conditions = []
     
     if query:
-        and_conditions.append({
-            "$or": [
-                {"cedula": {"$regex": query, "$options": "i"}},
-                {"nombre": {"$regex": query, "$options": "i"}}
-            ]
-        })
-        
+        # Búsqueda por tokens (AND de palabras) e insensible a acentos: cada
+        # palabra debe aparecer en cédula o nombre, en cualquier orden. Así
+        # "Nicolas Maduro" matchea "MADURO MOROS, NICOLAS".
+        for tok in query.split():
+            rx = build_accent_insensitive_regex(tok)
+            if not rx:
+                continue
+            and_conditions.append({
+                "$or": [
+                    {"cedula": {"$regex": rx, "$options": "i"}},
+                    {"nombre": {"$regex": rx, "$options": "i"}}
+                ]
+            })
+
     if letter:
         and_conditions.append({"cedula": {"$regex": f"^{letter}-", "$options": "i"}})
         
